@@ -254,6 +254,7 @@ class MainWindow(scrolled.ScrolledPanel):
         address = lookUp[n]
 
         messageType = self.getData(address, RETURNTYPE, nodeDict)
+        print (messageType)
 
         if messageType == DIRECTEDRESPONSE:
            msgData = nodeDict[address][1]
@@ -279,9 +280,9 @@ class MainWindow(scrolled.ScrolledPanel):
               nFrame.Show(True)
               return
 
-        else:  # no return, must be real protothrottle
-           nFrame = PthrottleFrame(self, title="Protothottle {}".format(address), size=(600,800), data=msgData)
-           nFrame.Show(True)
+#        else:  # no return, must be real protothrottle
+#           nFrame = PthrottleFrame(self, title="Protothottle {}".format(address), size=(600,800), data=None)
+#           nFrame.Show(True)
 
     #---------------------------------------------------------------------
     def processProtothrottle(self):

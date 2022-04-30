@@ -10,91 +10,91 @@ adprot = { 0x30 :'A', 0x31 :'B', 0x32 :'C', 0x33 :'D', 0x34 :'E', 0x35 :'F', 0x3
 ## IDs for text controls and buttons
 
 PTIDVALUE       = 1
-PTIDBUTTON      = 2
+PTIDBUTTON      = 101
 BASEIDVALUE     = 3
-BASEIDBUTTON    = 4
+BASEIDBUTTON    = 102
 LOCOADRVALUE    = 5
-LOCOADRBUTTON   = 6
+LOCOADRBUTTON   = 103
 CONSISTDIR      = 7
 CONSISTADR      = 8
-CONSISTBUTTON   = 9
+CONSISTBUTTON   = 104
 
 SERVOZEROREV    = 10
 SERVOZEROLO     = 11
 SERVOZEROHI     = 12
-SERVOZEROBUTTON = 13
+SERVOZEROBUTTON = 105
 
 SERVOONEREV     = 14
 SERVOONEFUNC    = 15
 SERVOONELO      = 16
 SERVOONEHI      = 17
-SERVOONEBUTTON  = 18
+SERVOONEBUTTON  = 106
 
 SERVOTWOREV     = 19
 SERVOTWOFUNC    = 20
 SERVOTWOLO      = 21
 SERVOTWOHI      = 22
-SERVOTWOBUTTON  = 23
+SERVOTWOBUTTON  = 107
 
 OUTPUTXFNCODE   = 24
 OUTPUTXSTATE    = 25
 OUTPUTYFNCODE   = 26
 OUTPUTYSTATE    = 27
 
-OUTPUTXBUTTON   = 28
-OUTPUTYBUTTON   = 29
+OUTPUTXBUTTON   = 108
+OUTPUTYBUTTON   = 109
 
 WATCHDOGVALUE   = 30
-WATCHDOGBUTTON  = 31
+WATCHDOGBUTTON  = 110
 
 BRAKERATE       = 32
-BRAKERATEBUTTON = 33
+BRAKERATEBUTTON = 111
 BRAKEFNCODE     = 34
-BRAKEFNBUTTON   = 35
+BRAKEFNBUTTON   = 112
 ACCEL           = 36
-ACCELBUTTON     = 37
+ACCELBUTTON     = 113
 DECEL           = 38
-DECELBUTTON     = 39
+DECELBUTTON     = 114
 
 N1LOW           = 40
 N1HIGH          = 41
 N1OUT           = 42
-N1BUTTON        = 43
+N1BUTTON        = 115
 
 N2LOW           = 44
 N2HIGH          = 45
 N2OUT           = 46
-N2BUTTON        = 47
+N2BUTTON        = 116
 
 N3LOW           = 48
 N3HIGH          = 49
 N3OUT           = 50
-N3BUTTON        = 51
+N3BUTTON        = 117
 
 N4LOW           = 52
 N4HIGH          = 53
 N4OUT           = 54
-N4BUTTON        = 55
+N4BUTTON        = 118
 
 N5LOW           = 56
 N5HIGH          = 57
 N5OUT           = 58
-N5BUTTON        = 59
+N5BUTTON        = 119
 
 N6LOW           = 60
 N6HIGH          = 61
 N6OUT           = 62
-N6BUTTON        = 63
+N6BUTTON        = 120
 
 N7LOW           = 64
 N7HIGH          = 65
 N7OUT           = 66
-N7BUTTON        = 67
+N7BUTTON        = 121
 
 N8LOW           = 68
 N8HIGH          = 69
 N8OUT           = 70
-N8BUTTON        = 71
+N8BUTTON        = 122
 
 
 
@@ -205,7 +205,7 @@ class ReceiverFrame ( wx.Frame ):
         locoaddr = self.dataFrame[12]
         ch = self.dataFrame[13] << 8
         locoaddr = locoaddr | ch
-        
+
         self.LocoAddress = wx.TextCtrl( self.m_scrolledWindow1, LOCOADRVALUE, str(locoaddr), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.LocoAddress.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.LocoAddress.SetMinSize( wx.Size( 60,-1 ) )
@@ -215,7 +215,7 @@ class ReceiverFrame ( wx.Frame ):
         self.LocoAddressButton.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.LocoAddressButton.SetMinSize( wx.Size( 50,30 ) )
         self.LocoAddressButton.Bind(wx.EVT_BUTTON, self.OnButton)
-                
+
         bSizer1022.Add( self.LocoAddressButton, 0, wx.ALL, 7 )
         bSizer9.Add( bSizer1022, 1, wx.EXPAND, 5 )
         bSizer1013 = wx.BoxSizer( wx.HORIZONTAL )
@@ -229,21 +229,21 @@ class ReceiverFrame ( wx.Frame ):
         ########################################## Consist Direction
         cdir = self.dataFrame[16]
         consist = 'OFF'
-        if cdir == '1': consist = 'FWD'  
+        if cdir == '1': consist = 'FWD'
         if cdir == '2': consist = 'REV'
-        
+
         self.consistDirection = wx.Button( self.m_scrolledWindow1, CONSISTDIR, consist, wx.DefaultPosition, wx.DefaultSize, 0 )
         self.consistDirection.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.consistDirection.SetMinSize( wx.Size( 50,30 ) )
         self.consistDirection.Bind(wx.EVT_BUTTON, self.OnButton)
-        
+
         bSizer1013.Add( self.consistDirection, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
         ########################################## Consist Address
         consistaddr = self.dataFrame[14]
         ch = self.dataFrame[15] << 8
         consistaddr = consistaddr | ch
-        
+
         self.ConsistAddress = wx.TextCtrl( self.m_scrolledWindow1, CONSISTADR, str(consistaddr), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.ConsistAddress.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.ConsistAddress.SetMinSize( wx.Size( 60,-1 ) )
@@ -291,10 +291,10 @@ class ReceiverFrame ( wx.Frame ):
         checked = False
         if (int(svrr) & 0x01) == 1:
            checked = True
-        
+
         self.Servo0Rev = wx.CheckBox( self.m_scrolledWindow1, SERVOZEROREV, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
         self.Servo0Rev.SetValue(checked)
-        
+
         bSizer101.Add( self.Servo0Rev, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
         bSizer101.Add( ( 0, 0), 1, wx.EXPAND, 5 )
 
@@ -302,7 +302,7 @@ class ReceiverFrame ( wx.Frame ):
         svlo0 = self.dataFrame[17]               # 9,10
         ch    = self.dataFrame[18] << 8
         svlo0 = svlo0 | ch
-        
+
         self.Servo0Low = wx.TextCtrl( self.m_scrolledWindow1, SERVOZEROLO, str(svlo0), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Servo0Low.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Servo0Low.SetMinSize( wx.Size( 60,-1 ) )
@@ -311,8 +311,8 @@ class ReceiverFrame ( wx.Frame ):
         ################################################ Servo 0 High LImit
         svhi0 = self.dataFrame[19]
         ch    = self.dataFrame[20] << 8          # 11,12
-        svhi0 = svhi0 | ch        
-        
+        svhi0 = svhi0 | ch
+
         self.Servo0High = wx.TextCtrl( self.m_scrolledWindow1, SERVOZEROHI, str(svhi0), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Servo0High.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Servo0High.SetMinSize( wx.Size( 60,-1 ) )
@@ -322,7 +322,7 @@ class ReceiverFrame ( wx.Frame ):
         self.Servo0Button = wx.Button( self.m_scrolledWindow1, SERVOZEROBUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.Servo0Button.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Servo0Button.SetMinSize( wx.Size( 50,30 ) )
-        self.Servo0Button.Bind(wx.EVT_BUTTON, self.OnButton)        
+        self.Servo0Button.Bind(wx.EVT_BUTTON, self.OnButton)
 
         bSizer101.Add( self.Servo0Button, 0, wx.ALL, 7 )
         bSizer9.Add( bSizer101, 1, wx.EXPAND, 5 )
@@ -338,7 +338,7 @@ class ReceiverFrame ( wx.Frame ):
         checked = False
         if (int(svrr) & 0x02) == 2:
            checked = True
-           
+
         self.Servo1Rev = wx.CheckBox( self.m_scrolledWindow1, SERVOONEREV, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
         self.Servo1Rev.SetValue(checked)
 
@@ -347,7 +347,7 @@ class ReceiverFrame ( wx.Frame ):
 
         ################################################ Servo 1 function code
         sv1func = self.dataFrame[30]
-        
+
         self.Servo1FnCode = wx.TextCtrl( self.m_scrolledWindow1, SERVOONEFUNC, str(sv1func), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Servo1FnCode.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Servo1FnCode.SetMinSize( wx.Size( 40,-1 ) )
@@ -358,7 +358,7 @@ class ReceiverFrame ( wx.Frame ):
         svlo1 = self.dataFrame[21]               # 9,10
         ch    = self.dataFrame[22] << 8
         svlo1 = svlo1 | ch
- 
+
         self.Servo1Low = wx.TextCtrl( self.m_scrolledWindow1, SERVOONELO, str(svlo1), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Servo1Low.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Servo1Low.SetMinSize( wx.Size( 60,-1 ) )
@@ -368,8 +368,8 @@ class ReceiverFrame ( wx.Frame ):
         ################################################ Servo 1 high limit
         svhi1 = self.dataFrame[23]
         ch    = self.dataFrame[24] << 8          # 11,12
-        svhi1 = svhi1 | ch        
-         
+        svhi1 = svhi1 | ch
+
         self.Servo1High = wx.TextCtrl( self.m_scrolledWindow1, SERVOONEHI, str(svhi1), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Servo1High.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Servo1High.SetMinSize( wx.Size( 60,-1 ) )
@@ -380,7 +380,7 @@ class ReceiverFrame ( wx.Frame ):
         self.Servo1Button = wx.Button( self.m_scrolledWindow1, SERVOONEBUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.Servo1Button.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Servo1Button.SetMinSize( wx.Size( 50,30 ) )
-        self.Servo1Button.Bind(wx.EVT_BUTTON, self.OnButton) 
+        self.Servo1Button.Bind(wx.EVT_BUTTON, self.OnButton)
 
         bSizer1011.Add( self.Servo1Button, 0, wx.ALL, 7 )
         bSizer9.Add( bSizer1011, 1, wx.EXPAND, 5 )
@@ -428,7 +428,7 @@ class ReceiverFrame ( wx.Frame ):
         ############################################### Servo 2 High Limit
         svhi2 = self.dataFrame[27]
         ch    = self.dataFrame[28] << 8          # 11,12
-        svhi2 = svhi2 | ch        
+        svhi2 = svhi2 | ch
 
         self.Servo2High = wx.TextCtrl( self.m_scrolledWindow1, SERVOTWOHI, str(svhi2), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Servo2High.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
@@ -439,7 +439,7 @@ class ReceiverFrame ( wx.Frame ):
         self.Servo2Button = wx.Button( self.m_scrolledWindow1, SERVOTWOBUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.Servo2Button.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Servo2Button.SetMinSize( wx.Size( 50,30 ) )
-        self.Servo2Button.Bind(wx.EVT_BUTTON, self.OnButton) 
+        self.Servo2Button.Bind(wx.EVT_BUTTON, self.OnButton)
 
         bSizer1012.Add( self.Servo2Button, 0, wx.ALL, 7 )
         bSizer9.Add( bSizer1012, 1, wx.EXPAND, 5 )
@@ -467,7 +467,7 @@ class ReceiverFrame ( wx.Frame ):
 
         ################################################ Output X function code
         outputxfn = self.dataFrame[35] & 0x7f
-        
+
         self.OutputXFnCode = wx.TextCtrl( self.m_scrolledWindow1, OUTPUTXFNCODE, str(outputxfn), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.OutputXFnCode.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.OutputXFnCode.SetMinSize( wx.Size( 60,-1 ) )
@@ -475,7 +475,7 @@ class ReceiverFrame ( wx.Frame ):
 
         ################################################ Output X State
         outputxst = (self.dataFrame[35] & 0x80) >> 7
-        
+
         self.OutputXState = wx.TextCtrl( self.m_scrolledWindow1, OUTPUTXSTATE, str(outputxst), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.OutputXState.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.OutputXState.SetMinSize( wx.Size( 60,-1 ) )
@@ -485,7 +485,7 @@ class ReceiverFrame ( wx.Frame ):
         self.OutputXButton = wx.Button( self.m_scrolledWindow1, OUTPUTXBUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.OutputXButton.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.OutputXButton.SetMinSize( wx.Size( 50,30 ) )
-        self.OutputXButton.Bind(wx.EVT_BUTTON, self.OnButton) 
+        self.OutputXButton.Bind(wx.EVT_BUTTON, self.OnButton)
 
         bSizer10121.Add( self.OutputXButton, 0, wx.ALL, 7 )
         bSizer9.Add( bSizer10121, 1, wx.EXPAND, 5 )
@@ -499,7 +499,7 @@ class ReceiverFrame ( wx.Frame ):
 
         ################################################ Output Y Function code
         outputyfn = self.dataFrame[36] & 0x7f
-        
+
         self.OutputYFnCode = wx.TextCtrl( self.m_scrolledWindow1, OUTPUTYFNCODE, str(outputyfn), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.OutputYFnCode.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.OutputYFnCode.SetMinSize( wx.Size( 60,-1 ) )
@@ -507,7 +507,7 @@ class ReceiverFrame ( wx.Frame ):
 
         ################################################ Output Y State
         outputyst = (self.dataFrame[36] & 0x80) >> 7
-        
+
         self.OutputYState = wx.TextCtrl( self.m_scrolledWindow1, OUTPUTYSTATE, str(outputyst), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.OutputYState.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.OutputYState.SetMinSize( wx.Size( 60,-1 ) )
@@ -517,7 +517,7 @@ class ReceiverFrame ( wx.Frame ):
         self.OutputYButton = wx.Button( self.m_scrolledWindow1, OUTPUTYBUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.OutputYButton.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.OutputYButton.SetMinSize( wx.Size( 50,30 ) )
-        self.OutputYButton.Bind(wx.EVT_BUTTON, self.OnButton) 
+        self.OutputYButton.Bind(wx.EVT_BUTTON, self.OnButton)
 
         bSizer101211.Add( self.OutputYButton, 0, wx.ALL, 7 )
         bSizer9.Add( bSizer101211, 1, wx.EXPAND, 5 )
@@ -539,7 +539,7 @@ class ReceiverFrame ( wx.Frame ):
 
         ############################################### Watchdog Value
         watchvalue = self.dataFrame[34]
-        
+
         self.WatchDog = wx.TextCtrl( self.m_scrolledWindow1, WATCHDOGVALUE, str(watchvalue), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.WatchDog.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.WatchDog.SetMinSize( wx.Size( 60,-1 ) )
@@ -573,7 +573,7 @@ class ReceiverFrame ( wx.Frame ):
         br0 = self.physicsFrame[10]
         br1 = self.physicsFrame[11]
         brakerate = (br1<<8) | br0
-        
+
         self.BrakeRate = wx.TextCtrl( self.m_scrolledWindow1, BRAKERATE, str(brakerate), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.BrakeRate.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.BrakeRate.SetMinSize( wx.Size( 60,-1 ) )
@@ -583,6 +583,8 @@ class ReceiverFrame ( wx.Frame ):
         self.BrakeRateButton = wx.Button( self.m_scrolledWindow1, BRAKERATEBUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.BrakeRateButton.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.BrakeRateButton.SetMinSize( wx.Size( 50,30 ) )
+        self.BrakeRateButton.Bind(wx.EVT_BUTTON, self.OnButton)
+
         bSizer1012121.Add( self.BrakeRateButton, 0, wx.ALL, 7 )
         bSizer9.Add( bSizer1012121, 1, wx.EXPAND, 5 )
         bSizer10121211 = wx.BoxSizer( wx.HORIZONTAL )
@@ -602,7 +604,7 @@ class ReceiverFrame ( wx.Frame ):
         bSizer10121211.Add( self.BrakeFnCode, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
         ################################################# Brake Function Program
-        self.BrakeFnCodeButton = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.BrakeFnCodeButton = wx.Button( self.m_scrolledWindow1, BRAKEFNBUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.BrakeFnCodeButton.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.BrakeFnCodeButton.SetMinSize( wx.Size( 50,30 ) )
         bSizer10121211.Add( self.BrakeFnCodeButton, 0, wx.ALL, 7 )
@@ -619,14 +621,14 @@ class ReceiverFrame ( wx.Frame ):
         ac0 = self.physicsFrame[12]
         ac1 = self.physicsFrame[13]
         acceleration = (ac1<<8) | ac0
-        
+
         self.Accleration = wx.TextCtrl( self.m_scrolledWindow1, ACCEL, str(acceleration), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Accleration.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Accleration.SetMinSize( wx.Size( 60,-1 ) )
         bSizer101212111.Add( self.Accleration, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
         ################################################# Acceleration Program
-        self.AccelerationButton = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.AccelerationButton = wx.Button( self.m_scrolledWindow1, ACCELBUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.AccelerationButton.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.AccelerationButton.SetMinSize( wx.Size( 50,30 ) )
 
@@ -644,14 +646,14 @@ class ReceiverFrame ( wx.Frame ):
         dc0 = self.physicsFrame[14]
         dc1 = self.physicsFrame[15]
         deceleration = (dc1<<8) | dc0
-        
+
         self.Deceleration = wx.TextCtrl( self.m_scrolledWindow1, DECEL, str(deceleration), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Deceleration.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Deceleration.SetMinSize( wx.Size( 60,-1 ) )
         bSizer101212112.Add( self.Deceleration, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
         ################################################# Deceleration Button
-        self.DecelerationButton = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.DecelerationButton = wx.Button( self.m_scrolledWindow1, DECELBUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.DecelerationButton.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.DecelerationButton.SetMinSize( wx.Size( 50,30 ) )
         bSizer101212112.Add( self.DecelerationButton, 0, wx.ALL, 7 )
@@ -691,7 +693,7 @@ class ReceiverFrame ( wx.Frame ):
         bSizer1012121121.Add( ( 22, 0), 1, wx.EXPAND, 5 )
 
         ################################################ Notch 1 Low
-        nl = self.notchFrame[11]        
+        nl = self.notchFrame[11]
         self.Notch1Low = wx.TextCtrl( self.m_scrolledWindow1, N1LOW, str(nl), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch1Low.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch1Low.SetMinSize( wx.Size( 60,-1 ) )
@@ -700,7 +702,7 @@ class ReceiverFrame ( wx.Frame ):
         bSizer1012121121.Add( ( 0, 0), 0, wx.EXPAND, 5 )
 
         ################################################ Notch 1 High
-        nh = self.notchFrame[12]        
+        nh = self.notchFrame[12]
         self.Notch1High = wx.TextCtrl( self.m_scrolledWindow1, N1HIGH, str(nh), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch1High.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch1High.SetMinSize( wx.Size( 60,-1 ) )
@@ -736,7 +738,7 @@ class ReceiverFrame ( wx.Frame ):
         bSizer10121211211.Add( self.Notch2Low, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
         bSizer10121211211.Add( ( 0, 0), 0, wx.EXPAND, 5 )
-        
+
         nh = self.notchFrame[15]
         self.Notch2High = wx.TextCtrl( self.m_scrolledWindow1, N2HIGH, str(nh), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch2High.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
