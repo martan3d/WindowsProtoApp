@@ -68,7 +68,8 @@ class xbeeController:
         self.sp.close()
 
     def clear(self):
-        self.sp.reset_input_buffer()
+        if self.sp != None:
+           self.sp.reset_input_buffer()
 
     def xbeeReturnResult(self, datalength):
         return(self.sp.read(datalength))

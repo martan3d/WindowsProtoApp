@@ -175,8 +175,10 @@ class MainWindow(scrolled.ScrolledPanel):
 
         # setup main Xbee interface class
         self.Xbee = xbeeController()
-        self.Xbee.clear()
-        #print (self.Xbee.getStatus())
+        if self.Xbee.getStatus() != None:
+           self.Xbee.clear()
+        else:
+           wx.MessageBox("No USB/Xbee Found!", "Error" ,wx.OK | wx.ICON_INFORMATION)
 
         # font
         self.font = wx.Font(18, family=wx.FONTFAMILY_DEFAULT, style=0, weight=90, encoding = wx.FONTENCODING_DEFAULT)

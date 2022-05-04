@@ -106,10 +106,21 @@ class ReceiverFrame ( wx.Frame ):
     instance = None
     init = 0
 
+
+    def handleLocoAddress(self):
+        print ('handle Address')
+
+    def handleProtoAddress(self):
+        print ('handle Proto')
+
     def OnButton(self, evt):
         be = evt.GetEventObject()
         n = be.GetId()
         print (n)
+
+        f = self.handlers[n-100]
+        f()
+
         pass
 
     def __new__( self, *args, **kwargs):
@@ -124,6 +135,8 @@ class ReceiverFrame ( wx.Frame ):
         if self.init:
            return
         self.init = 1
+
+        self.handlers = [ self.handleLocoAddress, self.handleProtoAddress, self.handleLocoAddress, self.handleLocoAddress, self.handleLocoAddress]
 
         wx.Frame.__init__ ( self, parent, id=wx.ID_ANY, title=title, pos=wx.DefaultPosition, size=size, style=wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL)
         self.SetBackgroundColour((166, 166, 166))
@@ -190,7 +203,7 @@ class ReceiverFrame ( wx.Frame ):
         self.BaseIDButton.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.BaseIDButton.SetMinSize( wx.Size( 50,30 ) )
         self.BaseIDButton.Bind(wx.EVT_BUTTON, self.OnButton)
-        
+
         bSizer1021.Add( self.BaseIDButton, 0, wx.ALL, 7 )
         bSizer9.Add( bSizer1021, 1, wx.EXPAND, 5 )
         bSizer1022 = wx.BoxSizer( wx.HORIZONTAL )
@@ -616,6 +629,7 @@ class ReceiverFrame ( wx.Frame ):
         self.m_staticText121212111.SetMinSize( wx.Size( 150,-1 ) )
         bSizer101212111.Add( self.m_staticText121212111, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
         bSizer101212111.Add( ( 94, 0), 0, wx.EXPAND, 5 )
+        self.BrakeFnCodeButton.Bind(wx.EVT_BUTTON, self.OnButton)
 
         ################################################# Acceleration Value
         ac0 = self.physicsFrame[12]
@@ -631,6 +645,7 @@ class ReceiverFrame ( wx.Frame ):
         self.AccelerationButton = wx.Button( self.m_scrolledWindow1, ACCELBUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.AccelerationButton.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.AccelerationButton.SetMinSize( wx.Size( 50,30 ) )
+        self.AccelerationButton.Bind(wx.EVT_BUTTON, self.OnButton)
 
         bSizer101212111.Add( self.AccelerationButton, 0, wx.ALL, 7 )
         bSizer9.Add( bSizer101212111, 1, wx.EXPAND, 5 )
@@ -657,7 +672,7 @@ class ReceiverFrame ( wx.Frame ):
         self.DecelerationButton.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.DecelerationButton.SetMinSize( wx.Size( 50,30 ) )
         bSizer101212112.Add( self.DecelerationButton, 0, wx.ALL, 7 )
-
+        self.DecelerationButton.Bind(wx.EVT_BUTTON, self.OnButton)
 
         bSizer9.Add( bSizer101212112, 1, wx.EXPAND, 5 )
         self.m_staticline2 = wx.StaticLine( self.m_scrolledWindow1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
@@ -720,6 +735,7 @@ class ReceiverFrame ( wx.Frame ):
         self.notch1Prg.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.notch1Prg.SetMinSize( wx.Size( 50,30 ) )
         bSizer1012121121.Add( self.notch1Prg, 0, wx.ALL, 7 )
+        self.notch1Prg.Bind(wx.EVT_BUTTON, self.OnButton)
 
         bSizer9.Add( bSizer1012121121, 1, wx.EXPAND, 5 )
 
@@ -755,6 +771,7 @@ class ReceiverFrame ( wx.Frame ):
         self.Notch2Button = wx.Button( self.m_scrolledWindow1, N2BUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.Notch2Button.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch2Button.SetMinSize( wx.Size( 50,30 ) )
+        self.Notch2Button.Bind(wx.EVT_BUTTON, self.OnButton)
 
         bSizer10121211211.Add( self.Notch2Button, 0, wx.ALL, 7 )
 
@@ -773,7 +790,8 @@ class ReceiverFrame ( wx.Frame ):
 
         bSizer10121211212.Add( ( 22, 0), 1, wx.EXPAND, 5 )
 
-        self.Notch3Low = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        nl = self.notchFrame[17]
+        self.Notch3Low = wx.TextCtrl( self.m_scrolledWindow1, N3LOW, str(nl), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch3Low.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch3Low.SetMinSize( wx.Size( 60,-1 ) )
 
@@ -782,23 +800,26 @@ class ReceiverFrame ( wx.Frame ):
 
         bSizer10121211212.Add( ( 0, 0), 0, wx.EXPAND, 5 )
 
-        self.Notch3High = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        nh = self.notchFrame[18]
+        self.Notch3High = wx.TextCtrl( self.m_scrolledWindow1, N3HIGH, str(nh), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch3High.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch3High.SetMinSize( wx.Size( 60,-1 ) )
 
         bSizer10121211212.Add( self.Notch3High, 0, wx.ALL, 5 )
 
-        self.Notch3Out = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        no = self.notchFrame[19]
+        self.Notch3Out = wx.TextCtrl( self.m_scrolledWindow1, N3OUT, str(no), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch3Out.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch3Out.SetMinSize( wx.Size( 60,-1 ) )
 
         bSizer10121211212.Add( self.Notch3Out, 0, wx.ALL, 5 )
 
-        self.m_button7121211212 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.m_button7121211212.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-        self.m_button7121211212.SetMinSize( wx.Size( 50,30 ) )
+        self.notch3Prg = wx.Button( self.m_scrolledWindow1, N3BUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.notch3Prg.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
+        self.notch3Prg.SetMinSize( wx.Size( 50,30 ) )
+        self.notch3Prg.Bind(wx.EVT_BUTTON, self.OnButton)
 
-        bSizer10121211212.Add( self.m_button7121211212, 0, wx.ALL, 7 )
+        bSizer10121211212.Add( self.notch3Prg, 0, wx.ALL, 7 )
 
 
         bSizer9.Add( bSizer10121211212, 1, wx.EXPAND, 5 )
@@ -836,11 +857,12 @@ class ReceiverFrame ( wx.Frame ):
 
         bSizer10121211213.Add( self.Notch4Out, 0, wx.ALL, 5 )
 
-        self.m_button7121211213 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.m_button7121211213.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-        self.m_button7121211213.SetMinSize( wx.Size( 50,30 ) )
+        self.notch4Prg = wx.Button( self.m_scrolledWindow1, N4BUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.notch4Prg.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
+        self.notch4Prg.SetMinSize( wx.Size( 50,30 ) )
+        self.notch4Prg.Bind(wx.EVT_BUTTON, self.OnButton)
 
-        bSizer10121211213.Add( self.m_button7121211213, 0, wx.ALL, 7 )
+        bSizer10121211213.Add( self.notch4Prg, 0, wx.ALL, 7 )
 
 
         bSizer9.Add( bSizer10121211213, 1, wx.EXPAND, 5 )
@@ -878,11 +900,12 @@ class ReceiverFrame ( wx.Frame ):
 
         bSizer10121211214.Add( self.Notch5Out, 0, wx.ALL, 5 )
 
-        self.m_button7121211214 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.m_button7121211214.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-        self.m_button7121211214.SetMinSize( wx.Size( 50,30 ) )
+        self.notch5Prg = wx.Button( self.m_scrolledWindow1, N5BUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.notch5Prg.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
+        self.notch5Prg.SetMinSize( wx.Size( 50,30 ) )
+        self.notch5Prg.Bind(wx.EVT_BUTTON, self.OnButton)
 
-        bSizer10121211214.Add( self.m_button7121211214, 0, wx.ALL, 7 )
+        bSizer10121211214.Add( self.notch5Prg, 0, wx.ALL, 7 )
 
 
         bSizer9.Add( bSizer10121211214, 1, wx.EXPAND, 5 )
@@ -920,11 +943,12 @@ class ReceiverFrame ( wx.Frame ):
 
         bSizer10121211215.Add( self.Notch6Out, 0, wx.ALL, 5 )
 
-        self.m_button7121211215 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.m_button7121211215.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-        self.m_button7121211215.SetMinSize( wx.Size( 50,30 ) )
+        self.notch6Prg = wx.Button( self.m_scrolledWindow1, N6BUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.notch6Prg.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
+        self.notch6Prg.SetMinSize( wx.Size( 50,30 ) )
+        self.notch6Prg.Bind(wx.EVT_BUTTON, self.OnButton)
 
-        bSizer10121211215.Add( self.m_button7121211215, 0, wx.ALL, 7 )
+        bSizer10121211215.Add( self.notch6Prg, 0, wx.ALL, 7 )
 
 
         bSizer9.Add( bSizer10121211215, 1, wx.EXPAND, 5 )
@@ -962,11 +986,12 @@ class ReceiverFrame ( wx.Frame ):
 
         bSizer10121211216.Add( self.Notch7Out, 0, wx.ALL, 5 )
 
-        self.m_button7121211216 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.m_button7121211216.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-        self.m_button7121211216.SetMinSize( wx.Size( 50,30 ) )
+        self.notch7Prg = wx.Button( self.m_scrolledWindow1, N7BUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.notch7Prg.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
+        self.notch7Prg.SetMinSize( wx.Size( 50,30 ) )
+        self.notch7Prg.Bind(wx.EVT_BUTTON, self.OnButton)
 
-        bSizer10121211216.Add( self.m_button7121211216, 0, wx.ALL, 7 )
+        bSizer10121211216.Add( self.notch7Prg, 0, wx.ALL, 7 )
 
 
         bSizer9.Add( bSizer10121211216, 1, wx.EXPAND, 5 )
@@ -1004,11 +1029,12 @@ class ReceiverFrame ( wx.Frame ):
 
         bSizer10121211217.Add( self.Notch8Out, 0, wx.ALL, 5 )
 
-        self.m_button7121211217 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.m_button7121211217.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-        self.m_button7121211217.SetMinSize( wx.Size( 50,30 ) )
+        self.notch8Prg = wx.Button( self.m_scrolledWindow1, N8BUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.notch8Prg.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
+        self.notch8Prg.SetMinSize( wx.Size( 50,30 ) )
+        self.notch8Prg.Bind(wx.EVT_BUTTON, self.OnButton)
 
-        bSizer10121211217.Add( self.m_button7121211217, 0, wx.ALL, 7 )
+        bSizer10121211217.Add( self.notch8Prg, 0, wx.ALL, 7 )
 
 
         bSizer9.Add( bSizer10121211217, 1, wx.EXPAND, 5 )
