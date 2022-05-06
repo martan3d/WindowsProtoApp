@@ -1,9 +1,14 @@
+import time
 import wx
 import wx.xrc
 
 adprot = { 0x30 :'A', 0x31 :'B', 0x32 :'C', 0x33 :'D', 0x34 :'E', 0x35 :'F', 0x36 : 'G', 0x37 : 'H', 0x38 : 'I', 0x39 : 'J',
            0x3a : 'K', 0x3b : 'L', 0x3c : 'M', 0x3d : 'N', 0x3e : 'O', 0x3f : 'P', 0x40 : 'Q', 0x41 : 'R', 0x42 : 'S',
            0x43 : 'T', 0x44 : 'U', 0x45 : 'V', 0x46 : 'W', 0x47 : 'X', 0x48 : 'Y', 0x49 : 'Z' }
+
+protad = { 'A': 0x30, 'B': 0x31, 'C': 0x32, 'D': 0x33, 'E': 0x34, 'F': 0x35, 'G': 0x36, 'H': 0x37, 'I': 0x38,
+           'J': 0x39, 'K': 0x3a, 'L': 0x3b, 'M': 0x3c, 'N': 0x3d, 'O': 0x3e, 'P': 0x3f,
+           'Q': 0x40, 'R': 0x41, 'S': 0x42, 'T': 0x43, 'U': 0x44, 'V': 0x45, 'W': 0x46, 'X': 0x47, 'Y': 0x48, 'Z': 0x49 }
 
 
 ###########################################################################
@@ -96,7 +101,13 @@ N8HIGH          = 69
 N8OUT           = 70
 N8BUTTON        = 122
 
+# MESSAGE IDS
 
+SETBASEADDRESS  = 38
+SETPROTOADDRESS = 39
+SETLOCOADDRESS  = 40
+SETCONSISTADDRESS    = 45
+SETCONSISTDIRECTION  = 46
 
 
 ###########################################################################
@@ -106,22 +117,95 @@ class ReceiverFrame ( wx.Frame ):
     instance = None
     init = 0
 
+    def buildAddress(self, address):
+        dest    = [0,0,0,0,0,0,0,0]
+        dest[0] = int(address[:2], 16)           # very brute force way to pull this out!
+        dest[1] = int(address[2:4], 16)
+        dest[2] = int(address[4:6], 16)
+        dest[3] = int(address[6:8], 16)
+        dest[4] = int(address[8:10], 16)
+        dest[5] = int(address[10:12], 16)
+        dest[6] = int(address[12:14], 16)
+        dest[7] = int(address[14:16], 16)
+        return dest
 
-    def handleLocoAddress(self):
-        print ('handle Address')
+
+    # set the protothrottle base address, A-Z
 
     def handleProtoAddress(self):
-        print ('handle Proto')
+        baseaddress = protoad[self.PTID.GetValue()]
+        datapayload = chr(SETPROTOADDRESS) + baseaddress + '234567890123456789'
+        self.Xbee.clear()
+        self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), datapayload)
+        time.sleep(0.25)
+        self.Xbee.getPacket()
+
+
+    # set the protothrottle Base ID 0-31
+
+    def handleBaseID(self):
+        baseid = self.BaseID.GetValue()
+        datapayload = chr(SETBASEADDRESS) + baseid[0] + baseid[1] + '34567890123456789'
+        self.Xbee.clear()
+        self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), datapayload)
+        time.sleep(0.25)
+        self.Xbee.getPacket()
+
+    # set the consist mode/direction
+
+    def handleConsistMode(self):
+        dccaddr = self.consistDirection.GetValue()
+        datapayload = chr(SETCONSISTDIRECTION) + dccaddr[0] + '234567890123456789'
+        self.Xbee.clear()
+        self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), datapayload)
+        time.sleep(0.25)
+        self.Xbee.getPacket()
+
+    def handleConsistAddress(self):
+        dccaddr = self.ConsistAddress.GetValue()
+        datapayload = chr(SETCONSISTADDRESS) + dccaddr[0] + dccaddr[1] + dccaddr[2] + dccaddr[3] + '567890123456789'
+        self.Xbee.clear()
+        self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), datapayload)
+        time.sleep(0.25)
+        self.Xbee.getPacket()
+
+    # set the PT loco address the Receiver responds to
+
+    def handleLocoAddress(self):
+        dccaddr = self.LocoAddress.GetValue()
+        datapayload = chr(SETLOCOADDRESS) + dccaddr[0] + dccaddr[1] + dccaddr[2] + dccaddr[3] + '567890123456789'
+        self.Xbee.clear()
+        self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), datapayload)
+        time.sleep(0.25)
+        self.Xbee.getPacket()
+
+
+    def handleServo0Reverse(self):
+        print ('handle servo 0 reverse')
+
+    def handleServo0Program(self):
+        print ('handle servo 0 program')
+
+    def handleServo1Reverse(self):
+        print ('handle servo 1 reverse')
+
+    def handleServo1Program(self):
+        print ('handle servo 1 program')
+
+    def handleServo2Reverse(self):
+        print ('handle servo 2 reverse')
+
+    def handleServo2Program(self):
+        print ('handle servo 2 program')
+
 
     def OnButton(self, evt):
         be = evt.GetEventObject()
         n = be.GetId()
         print (n)
+        method = self.handlers[str(n)]
+        method()
 
-        f = self.handlers[n-100]
-        f()
-
-        pass
 
     def __new__( self, *args, **kwargs):
         if self.instance is None:
@@ -130,13 +214,26 @@ class ReceiverFrame ( wx.Frame ):
            self.instance = wx.Frame.__new__(self)
         return self.instance
 
-    def __init__( self, parent, title, size, data, pdata, ndata, mdata, xbee):
+    def __init__( self, parent, title, size, mac, data, pdata, ndata, mdata, xbee):
 
         if self.init:
            return
         self.init = 1
 
-        self.handlers = [ self.handleLocoAddress, self.handleProtoAddress, self.handleLocoAddress, self.handleLocoAddress, self.handleLocoAddress]
+        # set handler methods to IDs sent by window buttons
+
+        self.handlers = { "101" : self.handleProtoAddress,
+                          "102" : self.handleBaseID,
+                          "103" : self.handleLocoAddress,
+                          "7"   : self.handleConsistMode,
+                          "104" : self.handleConsistAddress,
+                          "10"  : self.handleServo0Reverse,
+                          "105" : self.handleServo0Program,
+                          "107" : self.handleServo1Reverse,
+                          "108" : self.handleServo1Program,
+                          "109" : self.handleServo2Reverse,
+                          "110" : self.handleServo2Program,
+                        }
 
         wx.Frame.__init__ ( self, parent, id=wx.ID_ANY, title=title, pos=wx.DefaultPosition, size=size, style=wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL)
         self.SetBackgroundColour((166, 166, 166))
@@ -144,6 +241,8 @@ class ReceiverFrame ( wx.Frame ):
         self.physicsFrame = pdata
         self.notchFrame   = ndata
         self.maskFrame    = mdata
+        self.macAddress   = mac
+        self.Xbee         = xbee
 
         self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
         self.SetFont( wx.Font( 22, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
@@ -156,7 +255,7 @@ class ReceiverFrame ( wx.Frame ):
         self.m_staticText9.Wrap( -1 )
         self.m_staticText9.SetFont( wx.Font( 22, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         bSizer8.Add( self.m_staticText9, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 10 )
-        self.m_staticText43 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"0013e3a5666", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText43 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, str(self.macAddress), wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText43.Wrap( -1 )
         bSizer8.Add( self.m_staticText43, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
         bSizer9 = wx.BoxSizer( wx.VERTICAL )
@@ -307,6 +406,7 @@ class ReceiverFrame ( wx.Frame ):
 
         self.Servo0Rev = wx.CheckBox( self.m_scrolledWindow1, SERVOZEROREV, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
         self.Servo0Rev.SetValue(checked)
+        self.Servo0Rev.Bind(wx.EVT_CHECKBOX, self.OnButton)
 
         bSizer101.Add( self.Servo0Rev, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
         bSizer101.Add( ( 0, 0), 1, wx.EXPAND, 5 )
