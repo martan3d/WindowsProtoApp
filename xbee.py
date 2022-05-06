@@ -323,11 +323,11 @@ class xbeeController:
         i = (255-cks) & 0x00ff
         frame[length+3] = i
         for d in frame:
-           t = chr(d)
-           self.sp.write(t.encode())
+            t = bytes([d])
+            self.sp.write( t )
 
-#        for d in frame:
-#            p = "%x" % d
-#            print (p,)
-#        print
-#        print ("LENGTH", length)
+        for d in frame:
+            p = "%2x - %s" % (d, chr(d))
+            print (p,)
+        print
+        print ("LENGTH", length)

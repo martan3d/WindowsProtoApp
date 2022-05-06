@@ -101,6 +101,9 @@ N8HIGH          = 69
 N8OUT           = 70
 N8BUTTON        = 122
 
+SETNODEID       = 123
+
+
 # MESSAGE IDS
 
 SETBASEADDRESS  = 38
@@ -119,7 +122,7 @@ class ReceiverFrame ( wx.Frame ):
 
     def buildAddress(self, address):
         dest    = [0,0,0,0,0,0,0,0]
-        dest[0] = int(address[:2], 16)           # very brute force way to pull this out!
+        dest[0] = int(address[:2], 16)           # build mac address from ascii display string
         dest[1] = int(address[2:4], 16)
         dest[2] = int(address[4:6], 16)
         dest[3] = int(address[6:8], 16)
@@ -129,6 +132,16 @@ class ReceiverFrame ( wx.Frame ):
         dest[7] = int(address[14:16], 16)
         return dest
 
+    # set the Xbee node id, receiver does not see this, Xbee just uses it
+
+    def handleNodeId(self):
+        nodeid = self.nodeid.GetValue()
+        self.Xbee.clear()
+        txaddr = self.buildAddress(self.macAddress)
+        self.Xbee.xbeeTransmitRemoteCommand(txaddr, 'N', 'I', nodeid)    # set node id
+        self.Xbee.xbeeTransmitRemoteCommand(txaddr, 'A', 'C', '')        # apply changes
+        self.Xbee.xbeeTransmitRemoteCommand(txaddr, 'W', 'R', '')        # write to eeprom
+        time.sleep(0.25)
 
     # set the protothrottle base address, A-Z
 
@@ -154,15 +167,33 @@ class ReceiverFrame ( wx.Frame ):
     # set the consist mode/direction
 
     def handleConsistMode(self):
-        dccaddr = self.consistDirection.GetValue()
-        datapayload = chr(SETCONSISTDIRECTION) + dccaddr[0] + '234567890123456789'
+        consistdir = self.consistDirection.GetLabel()
+        cd = 0
+        if consistdir == 'OFF':
+           self.consistDirection.SetLabel('FWD')
+           cd = 1
+
+        if consistdir == 'FWD':
+           self.consistDirection.SetLabel('REV')
+           cd = 2
+
+        if consistdir == 'REV':
+           self.consistDirection.SetLabel('OFF')
+           cd = 0
+
+        datapayload = chr(SETCONSISTDIRECTION) + chr(cd) + '234567890123456789'
         self.Xbee.clear()
         self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), datapayload)
         time.sleep(0.25)
         self.Xbee.getPacket()
 
+    # set consist address
+
     def handleConsistAddress(self):
         dccaddr = self.ConsistAddress.GetValue()
+        dccaddr = "0000" + dccaddr
+        dccaddr = dccaddr[-4:]
+        print ('dccaddr', dccaddr)
         datapayload = chr(SETCONSISTADDRESS) + dccaddr[0] + dccaddr[1] + dccaddr[2] + dccaddr[3] + '567890123456789'
         self.Xbee.clear()
         self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), datapayload)
@@ -173,6 +204,9 @@ class ReceiverFrame ( wx.Frame ):
 
     def handleLocoAddress(self):
         dccaddr = self.LocoAddress.GetValue()
+        dccaddr = "0000" + dccaddr
+        dccaddr = dccaddr[-4:]
+        print ('dccaddr', dccaddr)
         datapayload = chr(SETLOCOADDRESS) + dccaddr[0] + dccaddr[1] + dccaddr[2] + dccaddr[3] + '567890123456789'
         self.Xbee.clear()
         self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), datapayload)
@@ -233,6 +267,7 @@ class ReceiverFrame ( wx.Frame ):
                           "108" : self.handleServo1Program,
                           "109" : self.handleServo2Reverse,
                           "110" : self.handleServo2Program,
+                          "123" : self.handleNodeId,
                         }
 
         wx.Frame.__init__ ( self, parent, id=wx.ID_ANY, title=title, pos=wx.DefaultPosition, size=size, style=wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL)
@@ -251,15 +286,23 @@ class ReceiverFrame ( wx.Frame ):
         self.m_scrolledWindow1.SetScrollRate( 5, 5 )
         self.m_scrolledWindow1.SetFont( wx.Font( 10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         bSizer8 = wx.BoxSizer( wx.VERTICAL )
-        self.m_staticText9 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, title, wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.m_staticText9.Wrap( -1 )
-        self.m_staticText9.SetFont( wx.Font( 22, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-        bSizer8.Add( self.m_staticText9, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 10 )
+
+        self.nodeid = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, title, wx.DefaultPosition, wx.DefaultSize, style=wx.TE_CENTER )
+        self.nodeid.SetFont( wx.Font( 22, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
+        bSizer8.Add( self.nodeid, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 10 )
+
+
+        self.setid = wx.Button( self.m_scrolledWindow1, SETNODEID, u"Set", wx.DefaultPosition, wx.Size( 30,20 ), 0 )
+        bSizer8.Add( self.setid, 0, wx.ALIGN_CENTER|wx.ALL, 5 )
+        self.setid.Bind(wx.EVT_BUTTON, self.OnButton)
+
+
         self.m_staticText43 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, str(self.macAddress), wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText43.Wrap( -1 )
         bSizer8.Add( self.m_staticText43, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
         bSizer9 = wx.BoxSizer( wx.VERTICAL )
         bSizer102 = wx.BoxSizer( wx.HORIZONTAL )
+
         self.m_staticText122 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"ProtoThrottle ID", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText122.Wrap( -1 )
         self.m_staticText122.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
@@ -340,9 +383,10 @@ class ReceiverFrame ( wx.Frame ):
 
         ########################################## Consist Direction
         cdir = self.dataFrame[16]
+        print ('cdir', cdir)
         consist = 'OFF'
-        if cdir == '1': consist = 'FWD'
-        if cdir == '2': consist = 'REV'
+        if cdir == 1: consist = 'FWD'
+        if cdir == 2: consist = 'REV'
 
         self.consistDirection = wx.Button( self.m_scrolledWindow1, CONSISTDIR, consist, wx.DefaultPosition, wx.DefaultSize, 0 )
         self.consistDirection.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
