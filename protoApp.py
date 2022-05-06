@@ -25,6 +25,11 @@ DIRECTEDRESPONSE  = 4
 ACK               = 5
 UNKNOWN           = 6
 
+
+SETPROTOADDRESS  = 39
+SETBASEADDRESS   = 38
+
+
 SETNOTCHMASKS    = 51
 GETNOTCHMASKS    = 52
 SETNOTCH         = 50
@@ -278,7 +283,7 @@ class MainWindow(scrolled.ScrolledPanel):
               self.getData(address, GETNOTCHMASKS, nodeMasks)
               maskData = nodeMasks[address][1]
 
-              nFrame = ReceiverFrame(self, title="{}".format(nodeid), size=(600,800), data=msgData, pdata=physicsData, ndata=notchData, mdata=nodeMasks, xbee=self.Xbee)
+              nFrame = ReceiverFrame(self, title="{}".format(nodeid), size=(600,800), mac=address, data=msgData, pdata=physicsData, ndata=notchData, mdata=nodeMasks, xbee=self.Xbee)
               nFrame.Show(True)
               return
 
@@ -296,6 +301,20 @@ class MainWindow(scrolled.ScrolledPanel):
     def processReceiver(self, address):
         print ("process receiver")
         self.getMainData(address)
+
+
+    #---------------------------------------------------------------------
+    def sendData(self, address, function, dict):
+        data    = '01234567890123456789'      # don't care about what we send
+        txaddr  = buildAddress(address)       # send to mac address
+        data    = chr(function) + data[1:]
+        dlen    = len(data)
+
+        self.Xbee.clear()
+        self.Xbee.xbeeTransmitDataFrame(txaddr, data)
+
+        time.sleep(0.25)
+
 
     #---------------------------------------------------------------------
     def getData(self, address, function, dict):
