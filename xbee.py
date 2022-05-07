@@ -326,8 +326,8 @@ class xbeeController:
             t = bytes([d])
             self.sp.write( t )
 
-        for d in frame:
-            p = "%2x - %s" % (d, chr(d))
-            print (p,)
-        print
-        print ("LENGTH", length)
+#        for d in frame:
+#            p = "%2x - %s" % (d, chr(d))
+#            print (p,)
+#        print
+#        print ("LENGTH", length)

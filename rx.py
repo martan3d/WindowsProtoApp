@@ -111,7 +111,9 @@ SETPROTOADDRESS = 39
 SETLOCOADDRESS  = 40
 SETCONSISTADDRESS    = 45
 SETCONSISTDIRECTION  = 46
-
+SETSERVOCONFIG = 47
+SETTIMEOUT = 25
+SETOUTPUTSMODE = 26
 
 ###########################################################################
 
@@ -213,31 +215,93 @@ class ReceiverFrame ( wx.Frame ):
         time.sleep(0.25)
         self.Xbee.getPacket()
 
+    # set servo parameters
 
-    def handleServo0Reverse(self):
-        print ('handle servo 0 reverse')
+    def setServo(self, servonum):
+        if servonum == 0:
+           servorev = self.Servo0Rev.GetValue()
+           servohi = self.Servo0High.GetValue()
+           servolo = self.Servo0Low.GetValue()
+           func = "00"
+
+        if servonum == 1:
+           servorev = self.Servo1Rev.GetValue()
+           servohi = self.Servo1High.GetValue()
+           servolo = self.Servo1Low.GetValue()
+           func = self.Servo1FnCode.GetValue()
+
+        if servonum == 2:
+           servorev = self.Servo2Rev.GetValue()
+           servohi = self.Servo2High.GetValue()
+           servolo = self.Servo2Low.GetValue()
+           func = self.Servo2FnCode.GetValue()
+
+        shigh = "0000" + servohi
+        shigh = shigh[-4:]
+
+        slow  = "0000" + servolo
+        slow = slow[-4:]
+
+        if servorev == 'true': sr = '1'
+        else: sr = '0'
+
+        adr = "00" + func
+        addr = adr[-2:]
+
+        datapayload = chr(SETSERVOCONFIG) + str(servonum) + shigh[0] + shigh[1] + shigh[2] + shigh[3] + slow[0] + slow[1] + slow[2] + slow[3] + sr + addr[0] + addr[1] + '3456789'
+
+        self.Xbee.clear()
+        self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), datapayload)
+        time.sleep(0.25)
+
+    # individual servo handlers call the generic above
 
     def handleServo0Program(self):
-        print ('handle servo 0 program')
-
-    def handleServo1Reverse(self):
-        print ('handle servo 1 reverse')
+        self.setServo(0)
 
     def handleServo1Program(self):
-        print ('handle servo 1 program')
-
-    def handleServo2Reverse(self):
-        print ('handle servo 2 reverse')
+        self.setServo(1)
 
     def handleServo2Program(self):
-        print ('handle servo 2 program')
+        self.setServo(2)
 
+    # Configure Output X
+
+    def handleOutputX(self):
+        fc = self.OutputXFnCode.GetValue()
+        out = self.OutputXState.GetValue()
+        payload = chr(SETOUTPUTSMODE) + chr(0) + chr(fc) + chr(out) + '5678901201234567'
+        self.Xbee.clear()
+        self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), payload)
+        time.sleep(0.25)
+
+    # Configure Output Y
+
+    def handleOutputY(self):
+        fc = self.OutputYFnCode.GetValue()
+        out = self.OutputYState.GetValue()
+        payload = chr(SETOUTPUTSMODE) + chr(1) + chr(fc) + chr(out) + '5678901201234567'
+        self.Xbee.clear()
+        self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), payload)
+        time.sleep(0.25)
+
+    # Configure Watchdog
+
+    def handleWatchDog(self):
+        seconds = self.WatchDog.GetValue()
+        payload = chr(SETTIMEOUT) + chr(wdv) + '345678901201234567'
+        self.Xbee.clear()
+        self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), payload)
+        time.sleep(0.25)
+
+
+    ###### event handler for everyone in the rx screen class
 
     def OnButton(self, evt):
         be = evt.GetEventObject()
-        n = be.GetId()
-        print (n)
-        method = self.handlers[str(n)]
+        id = be.GetId()
+        print (id)
+        method = self.handlers[id]
         method()
 
 
@@ -256,18 +320,18 @@ class ReceiverFrame ( wx.Frame ):
 
         # set handler methods to IDs sent by window buttons
 
-        self.handlers = { "101" : self.handleProtoAddress,
-                          "102" : self.handleBaseID,
-                          "103" : self.handleLocoAddress,
-                          "7"   : self.handleConsistMode,
-                          "104" : self.handleConsistAddress,
-                          "10"  : self.handleServo0Reverse,
-                          "105" : self.handleServo0Program,
-                          "107" : self.handleServo1Reverse,
-                          "108" : self.handleServo1Program,
-                          "109" : self.handleServo2Reverse,
-                          "110" : self.handleServo2Program,
-                          "123" : self.handleNodeId,
+        self.handlers = { PTIDBUTTON      : self.handleProtoAddress,
+                          BASEIDBUTTON    : self.handleBaseID,
+                          LOCOADRBUTTON   : self.handleLocoAddress,
+                          CONSISTDIR      : self.handleConsistMode,
+                          CONSISTBUTTON   : self.handleConsistAddress,
+                          SERVOZEROBUTTON : self.handleServo0Program,
+                          SERVOONEBUTTON  : self.handleServo1Program,
+                          SERVOTWOBUTTON  : self.handleServo2Program,
+                          SETNODEID       : self.handleNodeId,
+                          OUTPUTXBUTTON   : self.handleOutputX,
+                          OUTPUTYBUTTON   : self.handleOutputY,
+                          WATCHDOGBUTTON  : self.handleWatchDog,
                         }
 
         wx.Frame.__init__ ( self, parent, id=wx.ID_ANY, title=title, pos=wx.DefaultPosition, size=size, style=wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL)
@@ -450,7 +514,6 @@ class ReceiverFrame ( wx.Frame ):
 
         self.Servo0Rev = wx.CheckBox( self.m_scrolledWindow1, SERVOZEROREV, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
         self.Servo0Rev.SetValue(checked)
-        self.Servo0Rev.Bind(wx.EVT_CHECKBOX, self.OnButton)
 
         bSizer101.Add( self.Servo0Rev, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
         bSizer101.Add( ( 0, 0), 1, wx.EXPAND, 5 )
@@ -687,6 +750,8 @@ class ReceiverFrame ( wx.Frame ):
         bSizer2611.Add( self.m_staticText2611, 0, wx.ALL, 5 )
         bSizer9.Add( bSizer2611, 0, wx.EXPAND, 5 )
         bSizer101212 = wx.BoxSizer( wx.HORIZONTAL )
+
+        ############################################### Watchdog title
         self.m_staticText121212 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"WatchDog", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText121212.Wrap( -1 )
         self.m_staticText121212.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
@@ -710,6 +775,24 @@ class ReceiverFrame ( wx.Frame ):
 
         bSizer101212.Add( self.WatchDogButton, 0, wx.ALL, 7 )
         bSizer9.Add( bSizer101212, 1, wx.EXPAND, 5 )
+        #
+
+        self.m_staticline6 = wx.StaticLine( self.m_scrolledWindow1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+        bSizer9.Add( self.m_staticline6, 0, wx.EXPAND |wx.ALL, 5 )
+        bSizer35 = wx.BoxSizer( wx.HORIZONTAL )
+
+        self.m_staticText38 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"ESC Mode", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText38.Wrap( -1 )
+        self.m_staticText38.SetFont( wx.Font( 14, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, "Arial" ) )
+        bSizer35.Add( self.m_staticText38, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+        bSizer35.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+
+        self.m_button25 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Physics", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_button25.SetFont( wx.Font( 16, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, "Arial" ) )
+        bSizer35.Add( self.m_button25, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+        bSizer9.Add( bSizer35, 1, wx.EXPAND, 5 )
+
+        #
         self.m_staticline1 = wx.StaticLine( self.m_scrolledWindow1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
         bSizer9.Add( self.m_staticline1, 0, wx.EXPAND |wx.ALL, 5 )
         bSizer31 = wx.BoxSizer( wx.VERTICAL )
