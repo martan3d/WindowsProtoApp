@@ -52,6 +52,8 @@ OUTPUTYBUTTON   = 109
 WATCHDOGVALUE   = 30
 WATCHDOGBUTTON  = 110
 
+ESCMODE         = 65
+
 BRAKERATE       = 32
 BRAKERATEBUTTON = 111
 BRAKEFNCODE     = 34
@@ -104,16 +106,24 @@ N8BUTTON        = 122
 SETNODEID       = 123
 
 
-# MESSAGE IDS
+# MESSAGE IDS for Receiver message side
 
 SETBASEADDRESS  = 38
 SETPROTOADDRESS = 39
 SETLOCOADDRESS  = 40
-SETCONSISTADDRESS    = 45
+SETCONSISTADDRESS  = 45
 SETCONSISTDIRECTION  = 46
-SETSERVOCONFIG = 47
-SETTIMEOUT = 25
-SETOUTPUTSMODE = 26
+SETSERVOCONFIG   = 47
+SETTIMEOUT       = 25
+SETOUTPUTSMODE   = 26
+SETSERVOMODE     = 48
+SETACCELERATION  = 54
+SETDECELERATION  = 55
+SETBRAKERATE     = 56
+SETBRAKEFUNCTION = 57
+FACTORYRESET     = 58
+
+
 
 ###########################################################################
 
@@ -268,8 +278,8 @@ class ReceiverFrame ( wx.Frame ):
     # Configure Output X
 
     def handleOutputX(self):
-        fc = self.OutputXFnCode.GetValue()
-        out = self.OutputXState.GetValue()
+        fc = int(self.OutputXFnCode.GetValue())
+        out = int(self.OutputXState.GetValue())
         payload = chr(SETOUTPUTSMODE) + chr(0) + chr(fc) + chr(out) + '5678901201234567'
         self.Xbee.clear()
         self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), payload)
@@ -278,8 +288,8 @@ class ReceiverFrame ( wx.Frame ):
     # Configure Output Y
 
     def handleOutputY(self):
-        fc = self.OutputYFnCode.GetValue()
-        out = self.OutputYState.GetValue()
+        fc = int(self.OutputYFnCode.GetValue())
+        out = int(self.OutputYState.GetValue())
         payload = chr(SETOUTPUTSMODE) + chr(1) + chr(fc) + chr(out) + '5678901201234567'
         self.Xbee.clear()
         self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), payload)
@@ -288,12 +298,57 @@ class ReceiverFrame ( wx.Frame ):
     # Configure Watchdog
 
     def handleWatchDog(self):
-        seconds = self.WatchDog.GetValue()
+        wdv = int(self.WatchDog.GetValue())
         payload = chr(SETTIMEOUT) + chr(wdv) + '345678901201234567'
         self.Xbee.clear()
         self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), payload)
         time.sleep(0.25)
 
+    # configure ESC mode
+
+    def handleESCMode(self):
+        servomode = self.escMode.GetLabel()
+        print (servomode)
+        sm = 0
+        if servomode == 'Steam':
+           servomode = 'Couplers'
+           sm = 1
+        elif servomode == 'Couplers':
+             servomode = 'ESC'
+             sm = 2
+        elif servomode == 'ESC':
+             servomode = 'Physics'
+             sm = 3
+        elif servomode == 'Physics':
+             servomode = 'Steam'
+             sm = 0
+
+        self.escMode.SetLabel(servomode)
+
+        payload = chr(SETSERVOMODE) + chr(sm) + '234567890123456789'
+        self.Xbee.clear()
+        self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), payload)
+        time.sleep(0.25)
+
+
+    def handleAcceleration(self):
+        accel = self.Accleration.GetValue()
+        s = "000" + accel
+        s = s[-3:]
+
+        payload = chr(SETACCELERATION) + s[2] + s[1] + s[0] + '5678901201234567'
+        self.Xbee.clear()
+        self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), payload)
+        time.sleep(0.25)
+
+    def handleDeceleration(self):
+        decel = self.Deceleration.GetValue()
+        s = "000" + decel
+        s = s[-3:]
+        payload = chr(SETDECELERATION) + s[2] + s[1] + s[0] + '5678901201234567'
+        self.Xbee.clear()
+        self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), payload)
+        time.sleep(0.25)
 
     ###### event handler for everyone in the rx screen class
 
@@ -332,6 +387,9 @@ class ReceiverFrame ( wx.Frame ):
                           OUTPUTXBUTTON   : self.handleOutputX,
                           OUTPUTYBUTTON   : self.handleOutputY,
                           WATCHDOGBUTTON  : self.handleWatchDog,
+                          ESCMODE         : self.handleESCMode,
+                          ACCELBUTTON     : self.handleAcceleration,
+
                         }
 
         wx.Frame.__init__ ( self, parent, id=wx.ID_ANY, title=title, pos=wx.DefaultPosition, size=size, style=wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL)
@@ -787,10 +845,22 @@ class ReceiverFrame ( wx.Frame ):
         bSizer35.Add( self.m_staticText38, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
         bSizer35.Add( ( 0, 0), 1, wx.EXPAND, 5 )
 
-        self.m_button25 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Physics", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.m_button25.SetFont( wx.Font( 16, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, "Arial" ) )
-        bSizer35.Add( self.m_button25, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+        servomode = self.dataFrame[33]
+        mode = ''
+        if servomode == 0:
+           mode = 'Steam'
+        if servomode == 1:
+           mode = 'Couplers'
+        if servomode == 2:
+           mode = 'ESC'
+        if servomode == 3:
+           mode = 'Physics'
+
+        self.escMode = wx.Button( self.m_scrolledWindow1, ESCMODE, mode, wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.escMode.SetFont( wx.Font( 16, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, "Arial" ) )
+        bSizer35.Add( self.escMode, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
         bSizer9.Add( bSizer35, 1, wx.EXPAND, 5 )
+        self.escMode.Bind(wx.EVT_BUTTON, self.OnButton)
 
         #
         self.m_staticline1 = wx.StaticLine( self.m_scrolledWindow1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
