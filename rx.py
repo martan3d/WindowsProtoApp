@@ -105,6 +105,7 @@ N8BUTTON        = 122
 
 SETNODEID       = 123
 
+CKFUNC  = 1000
 
 # MESSAGE IDS for Receiver message side
 
@@ -350,7 +351,106 @@ class ReceiverFrame ( wx.Frame ):
         self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), payload)
         time.sleep(0.25)
 
+
+    def handleBrakeRate(self):
+        brakerate = self.BrakeRate.GetValue()
+
+
+    def handleBrakeFunctionCode(self):
+        brakefunc = self.BrakeFnCode.GetValue()
+
+    def handleNotch(self, notch, notchhigh, notchlow, notchval):
+        enabled = "1"
+
+        nhigh = "000" + notchhigh
+        nhigh = nhigh[-3:]
+
+        nlow = "000" + notchlow
+        nlow = nlow[-3:]
+
+        nval = "000" + notchval
+        nval = nval[-3:]
+
+        SETNOTCH = 50   ## 1        2        3       4         5         6         7         8         9        10        11         12
+        payload = chr(SETNOTCH) + enabled + notch + nval[0] + nval[1] + nval[2] + nlow[0] + nlow[1] + nlow[2] + nhigh[0] + nhigh[1] + nhigh[2] + '01234567'
+        self.Xbee.clear()
+        self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), payload)
+        time.sleep(0.25)
+
+
+    def handleNotch1(self):
+        l = self.Notch1Low.GetValue()
+        h = self.Notch1High.GetValue()
+        v = self.Notch1Out.GetValue()
+        self.handleNotch( "1", h, l, v)
+
+
+    def handleNotch2(self):
+        l = self.Notch2Low.GetValue()
+        h = self.Notch2High.GetValue()
+        v = self.Notch2Out.GetValue()
+        self.handleNotch( "2", h, l, v)
+
+    def handleNotch3(self):
+        l = self.Notch3Low.GetValue()
+        h = self.Notch3High.GetValue()
+        v = self.Notch3Out.GetValue()
+        self.handleNotch( "3", h, l, v)
+
+    def handleNotch4(self):
+        l = self.Notch4Low.GetValue()
+        h = self.Notch4High.GetValue()
+        v = self.Notch4Out.GetValue()
+        self.handleNotch( "4", h, l, v)
+
+    def handleNotch5(self):
+        l = self.Notch5Low.GetValue()
+        h = self.Notch5High.GetValue()
+        v = self.Notch5Out.GetValue()
+        self.handleNotch( "5", h, l, v)
+
+    def handleNotch6(self):
+        l = self.Notch6Low.GetValue()
+        h = self.Notch6High.GetValue()
+        v = self.Notch6Out.GetValue()
+        self.handleNotch( "6", h, l, v)
+
+    def handleNotch7(self):
+        l = self.Notch7Low.GetValue()
+        h = self.Notch7High.GetValue()
+        v = self.Notch7Out.GetValue()
+        self.handleNotch( "7", h, l, v)
+
+    def handleNotch8(self):
+        l = self.Notch8Low.GetValue()
+        h = self.Notch8High.GetValue()
+        v = self.Notch8Out.GetValue()
+        self.handleNotch( "8", h, l, v)
+
+    def handleFunctionMask(self):
+        v0 = int(self.F00.GetValue())
+        v1 = int(self.F01.GetValue())
+        v2 = int(self.F02.GetValue())
+        v3 = int(self.F03.GetValue())
+        v4 = int(self.F04.GetValue())
+        v5 = int(self.F05.GetValue())
+        v6 = int(self.F06.GetValue())
+        v7 = int(self.F07.GetValue())
+        v8 = int(self.F08.GetValue())
+        v9 = int(self.F09.GetValue())
+        v10 = int(self.F10.GetValue())
+        v11 = int(self.F11.GetValue())
+        v12 = int(self.F12.GetValue())
+        v13 = int(self.F13.GetValue())
+        v14 = int(self.F14.GetValue())
+        v15 = int(self.F15.GetValue())
+
+        bh = (v15<<7) | (v14<<6) | (v13<<5) | (v12<<4) | (v11<<3) | (v10<<2) | (v9<<1) | v8
+        bl = (v8<<7) | (v7<<6) | (v6<<5) | (v5<<4) | (v4<<3) | (v3<<2) | (v1<<1) | v0
+
+
     ###### event handler for everyone in the rx screen class
+    ###### pull event handler from dictionary based on button code
 
     def OnButton(self, evt):
         be = evt.GetEventObject()
@@ -389,7 +489,18 @@ class ReceiverFrame ( wx.Frame ):
                           WATCHDOGBUTTON  : self.handleWatchDog,
                           ESCMODE         : self.handleESCMode,
                           ACCELBUTTON     : self.handleAcceleration,
-
+                          DECELBUTTON     : self.handleDeceleration,
+                          BRAKERATEBUTTON : self.handleBrakeRate,
+                          BRAKEFNBUTTON   : self.handleBrakeFunctionCode,
+                          N1BUTTON        : self.handleNotch1,
+                          N2BUTTON        : self.handleNotch2,
+                          N3BUTTON        : self.handleNotch3,
+                          N4BUTTON        : self.handleNotch4,
+                          N5BUTTON        : self.handleNotch5,
+                          N6BUTTON        : self.handleNotch6,
+                          N7BUTTON        : self.handleNotch7,
+                          N8BUTTON        : self.handleNotch8,
+                          CKFUNC          : self.handleFunctionMask
                         }
 
         wx.Frame.__init__ ( self, parent, id=wx.ID_ANY, title=title, pos=wx.DefaultPosition, size=size, style=wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL)
@@ -997,6 +1108,9 @@ class ReceiverFrame ( wx.Frame ):
         self.m_staticText56.Wrap( -1 )
         bSizer2612.Add( self.m_staticText56, 0, wx.ALL, 5 )
         bSizer9.Add( bSizer2612, 0, wx.EXPAND, 5 )
+
+        ############################################################################### Notch 1
+
         bSizer1012121121 = wx.BoxSizer( wx.HORIZONTAL )
         self.m_staticText1212121121 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"Notch 1", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText1212121121.Wrap( -1 )
@@ -1032,9 +1146,10 @@ class ReceiverFrame ( wx.Frame ):
         self.notch1Prg.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.notch1Prg.SetMinSize( wx.Size( 50,30 ) )
         bSizer1012121121.Add( self.notch1Prg, 0, wx.ALL, 7 )
+        bSizer9.Add( bSizer1012121121, 1, wx.EXPAND, 5 )
         self.notch1Prg.Bind(wx.EVT_BUTTON, self.OnButton)
 
-        bSizer9.Add( bSizer1012121121, 1, wx.EXPAND, 5 )
+        ############################################################################ Notch 2
 
         bSizer10121211211 = wx.BoxSizer( wx.HORIZONTAL )
         self.m_staticText12121211211 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"Notch 2", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -1049,109 +1164,98 @@ class ReceiverFrame ( wx.Frame ):
         self.Notch2Low.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch2Low.SetMinSize( wx.Size( 60,-1 ) )
         bSizer10121211211.Add( self.Notch2Low, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
-
         bSizer10121211211.Add( ( 0, 0), 0, wx.EXPAND, 5 )
+
+        ################################################ Notch 2 High
 
         nh = self.notchFrame[15]
         self.Notch2High = wx.TextCtrl( self.m_scrolledWindow1, N2HIGH, str(nh), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch2High.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch2High.SetMinSize( wx.Size( 60,-1 ) )
 
+        ################################################ Notch 2 Out
+
         bSizer10121211211.Add( self.Notch2High, 0, wx.ALL, 5 )
         no = self.notchFrame[16]
         self.Notch2Out = wx.TextCtrl( self.m_scrolledWindow1, N2OUT, str(no), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch2Out.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch2Out.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211211.Add( self.Notch2Out, 0, wx.ALL, 5 )
 
         self.Notch2Button = wx.Button( self.m_scrolledWindow1, N2BUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.Notch2Button.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch2Button.SetMinSize( wx.Size( 50,30 ) )
         self.Notch2Button.Bind(wx.EVT_BUTTON, self.OnButton)
-
         bSizer10121211211.Add( self.Notch2Button, 0, wx.ALL, 7 )
 
+        ############################################################################ Notch 3
 
         bSizer9.Add( bSizer10121211211, 1, wx.EXPAND, 5 )
-
         bSizer10121211212 = wx.BoxSizer( wx.HORIZONTAL )
-
         self.m_staticText12121211212 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"Notch 3", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText12121211212.Wrap( -1 )
-
         self.m_staticText12121211212.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-
         bSizer10121211212.Add( self.m_staticText12121211212, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
-
-
         bSizer10121211212.Add( ( 22, 0), 1, wx.EXPAND, 5 )
+
+        ############################################### Notch 3 Low
 
         nl = self.notchFrame[17]
         self.Notch3Low = wx.TextCtrl( self.m_scrolledWindow1, N3LOW, str(nl), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch3Low.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch3Low.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211212.Add( self.Notch3Low, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
-
-
         bSizer10121211212.Add( ( 0, 0), 0, wx.EXPAND, 5 )
+
+        ############################################## Notch 3 High
 
         nh = self.notchFrame[18]
         self.Notch3High = wx.TextCtrl( self.m_scrolledWindow1, N3HIGH, str(nh), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch3High.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch3High.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211212.Add( self.Notch3High, 0, wx.ALL, 5 )
+
+        ############################################## Notch 3 Out
 
         no = self.notchFrame[19]
         self.Notch3Out = wx.TextCtrl( self.m_scrolledWindow1, N3OUT, str(no), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch3Out.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch3Out.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211212.Add( self.Notch3Out, 0, wx.ALL, 5 )
 
         self.notch3Prg = wx.Button( self.m_scrolledWindow1, N3BUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.notch3Prg.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.notch3Prg.SetMinSize( wx.Size( 50,30 ) )
         self.notch3Prg.Bind(wx.EVT_BUTTON, self.OnButton)
-
         bSizer10121211212.Add( self.notch3Prg, 0, wx.ALL, 7 )
 
+        ############################################################################ Notch 4
 
         bSizer9.Add( bSizer10121211212, 1, wx.EXPAND, 5 )
-
         bSizer10121211213 = wx.BoxSizer( wx.HORIZONTAL )
-
         self.m_staticText12121211213 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"Notch 4", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText12121211213.Wrap( -1 )
-
         self.m_staticText12121211213.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-
         bSizer10121211213.Add( self.m_staticText12121211213, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
-
-
         bSizer10121211213.Add( ( 22, 0), 1, wx.EXPAND, 5 )
 
-        self.Notch4Low = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        nl = self.notchFrame[20]
+        self.Notch4Low = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, str(nl), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch4Low.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch4Low.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211213.Add( self.Notch4Low, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
-
-
         bSizer10121211213.Add( ( 0, 0), 0, wx.EXPAND, 5 )
 
-        self.Notch4High = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        nh = self.notchFrame[21]
+        self.Notch4High = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, str(nh), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch4High.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch4High.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211213.Add( self.Notch4High, 0, wx.ALL, 5 )
 
-        self.Notch4Out = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        no = self.notchFrame[22]
+        self.Notch4Out = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, str(no), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch4Out.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch4Out.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211213.Add( self.Notch4Out, 0, wx.ALL, 5 )
 
         self.notch4Prg = wx.Button( self.m_scrolledWindow1, N4BUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -1161,462 +1265,387 @@ class ReceiverFrame ( wx.Frame ):
 
         bSizer10121211213.Add( self.notch4Prg, 0, wx.ALL, 7 )
 
+        #########################################################################################
 
         bSizer9.Add( bSizer10121211213, 1, wx.EXPAND, 5 )
-
         bSizer10121211214 = wx.BoxSizer( wx.HORIZONTAL )
-
         self.m_staticText12121211214 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"Notch 5", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText12121211214.Wrap( -1 )
-
         self.m_staticText12121211214.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-
         bSizer10121211214.Add( self.m_staticText12121211214, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
-
-
         bSizer10121211214.Add( ( 22, 0), 1, wx.EXPAND, 5 )
 
-        self.Notch5Low = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        nl = self.notchFrame[23]
+        self.Notch5Low = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, str(nl), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch5Low.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch5Low.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211214.Add( self.Notch5Low, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
-
-
         bSizer10121211214.Add( ( 0, 0), 0, wx.EXPAND, 5 )
 
-        self.Notch5High = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        nh = self.notchFrame[24]
+        self.Notch5High = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, str(nh), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch5High.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch5High.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211214.Add( self.Notch5High, 0, wx.ALL, 5 )
 
-        self.Notch5Out = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        no = self.notchFrame[25]
+        self.Notch5Out = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, str(no), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch5Out.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch5Out.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211214.Add( self.Notch5Out, 0, wx.ALL, 5 )
 
         self.notch5Prg = wx.Button( self.m_scrolledWindow1, N5BUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.notch5Prg.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.notch5Prg.SetMinSize( wx.Size( 50,30 ) )
         self.notch5Prg.Bind(wx.EVT_BUTTON, self.OnButton)
-
         bSizer10121211214.Add( self.notch5Prg, 0, wx.ALL, 7 )
 
+        #################################################################################################
 
         bSizer9.Add( bSizer10121211214, 1, wx.EXPAND, 5 )
-
         bSizer10121211215 = wx.BoxSizer( wx.HORIZONTAL )
 
         self.m_staticText12121211215 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"Notch 6", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText12121211215.Wrap( -1 )
-
         self.m_staticText12121211215.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-
         bSizer10121211215.Add( self.m_staticText12121211215, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
-
-
         bSizer10121211215.Add( ( 22, 0), 1, wx.EXPAND, 5 )
 
-        self.Notch6Low = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        nl = self.notchFrame[26]
+        self.Notch6Low = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, str(nl), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch6Low.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch6Low.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211215.Add( self.Notch6Low, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
-
-
         bSizer10121211215.Add( ( 0, 0), 0, wx.EXPAND, 5 )
 
-        self.Notch6High = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        nh = self.notchFrame[27]
+        self.Notch6High = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, str(nh), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch6High.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch6High.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211215.Add( self.Notch6High, 0, wx.ALL, 5 )
 
-        self.Notch6Out = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        no = self.notchFrame[28]
+        self.Notch6Out = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, str(no), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch6Out.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch6Out.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211215.Add( self.Notch6Out, 0, wx.ALL, 5 )
 
         self.notch6Prg = wx.Button( self.m_scrolledWindow1, N6BUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.notch6Prg.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.notch6Prg.SetMinSize( wx.Size( 50,30 ) )
         self.notch6Prg.Bind(wx.EVT_BUTTON, self.OnButton)
-
         bSizer10121211215.Add( self.notch6Prg, 0, wx.ALL, 7 )
 
-
         bSizer9.Add( bSizer10121211215, 1, wx.EXPAND, 5 )
-
         bSizer10121211216 = wx.BoxSizer( wx.HORIZONTAL )
 
         self.m_staticText12121211216 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"Notch 7", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText12121211216.Wrap( -1 )
-
         self.m_staticText12121211216.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-
         bSizer10121211216.Add( self.m_staticText12121211216, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
-
-
         bSizer10121211216.Add( ( 22, 0), 1, wx.EXPAND, 5 )
 
-        self.Notch7Low = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        nl = self.notchFrame[29]
+        self.Notch7Low = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, str(nl), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch7Low.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch7Low.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211216.Add( self.Notch7Low, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
-
-
         bSizer10121211216.Add( ( 0, 0), 0, wx.EXPAND, 5 )
 
-        self.Notch7High = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        nh = self.notchFrame[30]
+        self.Notch7High = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, str(nh), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch7High.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch7High.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211216.Add( self.Notch7High, 0, wx.ALL, 5 )
 
-        self.Notch7Out = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        no = self.notchFrame[31]
+        self.Notch7Out = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, str(no), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch7Out.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch7Out.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211216.Add( self.Notch7Out, 0, wx.ALL, 5 )
 
         self.notch7Prg = wx.Button( self.m_scrolledWindow1, N7BUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.notch7Prg.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.notch7Prg.SetMinSize( wx.Size( 50,30 ) )
         self.notch7Prg.Bind(wx.EVT_BUTTON, self.OnButton)
-
         bSizer10121211216.Add( self.notch7Prg, 0, wx.ALL, 7 )
-
-
         bSizer9.Add( bSizer10121211216, 1, wx.EXPAND, 5 )
-
         bSizer10121211217 = wx.BoxSizer( wx.HORIZONTAL )
 
         self.m_staticText12121211217 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"Notch 8", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText12121211217.Wrap( -1 )
-
         self.m_staticText12121211217.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-
         bSizer10121211217.Add( self.m_staticText12121211217, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
-
-
         bSizer10121211217.Add( ( 22, 0), 1, wx.EXPAND, 5 )
 
-        self.Notch8Low = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        nl = self.notchFrame[32]
+        self.Notch8Low = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, str(nl), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch8Low.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch8Low.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211217.Add( self.Notch8Low, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
-
-
         bSizer10121211217.Add( ( 0, 0), 0, wx.EXPAND, 5 )
 
-        self.Notch8High = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        nh = self.notchFrame[33]
+        self.Notch8High = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, str(nh), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch8High.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch8High.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211217.Add( self.Notch8High, 0, wx.ALL, 5 )
 
-        self.Notch8Out = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        no = self.notchFrame[34]
+        self.Notch8Out = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, str(no), wx.DefaultPosition, wx.DefaultSize, style=wx.TE_RIGHT )
         self.Notch8Out.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.Notch8Out.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer10121211217.Add( self.Notch8Out, 0, wx.ALL, 5 )
 
         self.notch8Prg = wx.Button( self.m_scrolledWindow1, N8BUTTON, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.notch8Prg.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.notch8Prg.SetMinSize( wx.Size( 50,30 ) )
         self.notch8Prg.Bind(wx.EVT_BUTTON, self.OnButton)
-
         bSizer10121211217.Add( self.notch8Prg, 0, wx.ALL, 7 )
 
+        ######################################## Notch Function Masks
 
         bSizer9.Add( bSizer10121211217, 1, wx.EXPAND, 5 )
-
         self.m_staticline3 = wx.StaticLine( self.m_scrolledWindow1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
         bSizer9.Add( self.m_staticline3, 0, wx.EXPAND |wx.ALL, 5 )
-
         self.m_staticText68 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"Consist Function Flags", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText68.Wrap( -1 )
-
         self.m_staticText68.SetFont( wx.Font( 12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-
         bSizer9.Add( self.m_staticText68, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
-
         bSizer80 = wx.BoxSizer( wx.HORIZONTAL )
 
-        self.F00 = wx.CheckBox( self.m_scrolledWindow1, wx.ID_ANY, u"F00", wx.DefaultPosition, wx.DefaultSize, 0 )
+        lmask = self.maskFrame[11]
+        self.F00 = wx.CheckBox( self.m_scrolledWindow1, CKFUNC, u"F00", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.F00.SetMinSize( wx.Size( 38,-1 ) )
-
         bSizer80.Add( self.F00, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+        self.F00.Bind(wx.EVT_CHECKBOX, self.OnButton)
+        self.F00.SetValue(lmask & 1)
 
-        self.F01 = wx.CheckBox( self.m_scrolledWindow1, wx.ID_ANY, u"F01", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.F01 = wx.CheckBox( self.m_scrolledWindow1, CKFUNC, u"F01", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.F01.SetMinSize( wx.Size( 38,-1 ) )
-
         bSizer80.Add( self.F01, 0, wx.ALL, 5 )
+        self.F01.Bind(wx.EVT_CHECKBOX, self.OnButton)
+        self.F01.SetValue(lmask & 2)
 
-        self.F02 = wx.CheckBox( self.m_scrolledWindow1, wx.ID_ANY, u"F02", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.F02 = wx.CheckBox( self.m_scrolledWindow1, CKFUNC, u"F02", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.F02.SetMinSize( wx.Size( 38,-1 ) )
-
         bSizer80.Add( self.F02, 0, wx.ALL, 5 )
+        self.F02.Bind(wx.EVT_CHECKBOX, self.OnButton)
+        self.F02.SetValue(lmask & 4)
 
-        self.F03 = wx.CheckBox( self.m_scrolledWindow1, wx.ID_ANY, u"F03", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.F03 = wx.CheckBox( self.m_scrolledWindow1, CKFUNC, u"F03", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.F03.SetMinSize( wx.Size( 38,-1 ) )
-
         bSizer80.Add( self.F03, 0, wx.ALL, 5 )
+        self.F03.Bind(wx.EVT_CHECKBOX, self.OnButton)
+        self.F03.SetValue(lmask & 8)
 
-        self.F04 = wx.CheckBox( self.m_scrolledWindow1, wx.ID_ANY, u"F04", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.F04 = wx.CheckBox( self.m_scrolledWindow1, CKFUNC, u"F04", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.F04.SetMinSize( wx.Size( 38,-1 ) )
-
         bSizer80.Add( self.F04, 0, wx.ALL, 5 )
+        self.F04.Bind(wx.EVT_CHECKBOX, self.OnButton)
+        self.F04.SetValue(lmask & 16)
 
-        self.F05 = wx.CheckBox( self.m_scrolledWindow1, wx.ID_ANY, u"F05", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.F05 = wx.CheckBox( self.m_scrolledWindow1, CKFUNC, u"F05", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.F05.SetMinSize( wx.Size( 38,-1 ) )
-
         bSizer80.Add( self.F05, 0, wx.ALL, 5 )
+        self.F05.Bind(wx.EVT_CHECKBOX, self.OnButton)
+        self.F05.SetValue(lmask & 32)
 
-        self.F06 = wx.CheckBox( self.m_scrolledWindow1, wx.ID_ANY, u"F06", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.F06 = wx.CheckBox( self.m_scrolledWindow1, CKFUNC, u"F06", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.F06.SetMinSize( wx.Size( 38,-1 ) )
-
         bSizer80.Add( self.F06, 0, wx.ALL, 5 )
+        self.F06.Bind(wx.EVT_CHECKBOX, self.OnButton)
+        self.F06.SetValue(lmask & 64)
 
-        self.F07 = wx.CheckBox( self.m_scrolledWindow1, wx.ID_ANY, u"F07", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.F07 = wx.CheckBox( self.m_scrolledWindow1, CKFUNC, u"F07", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.F07.SetMinSize( wx.Size( 38,-1 ) )
-
         bSizer80.Add( self.F07, 0, wx.ALL, 5 )
-
+        self.F07.Bind(wx.EVT_CHECKBOX, self.OnButton)
+        self.F07.SetValue(lmask & 128)
 
         bSizer9.Add( bSizer80, 0, wx.EXPAND, 5 )
-
         bSizer801 = wx.BoxSizer( wx.HORIZONTAL )
 
-        self.F08 = wx.CheckBox( self.m_scrolledWindow1, wx.ID_ANY, u"F08", wx.DefaultPosition, wx.DefaultSize, 0 )
+        lmask = self.maskFrame[12]
+        self.F08 = wx.CheckBox( self.m_scrolledWindow1, CKFUNC, u"F08", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.F08.SetMinSize( wx.Size( 38,-1 ) )
-
         bSizer801.Add( self.F08, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+        self.F08.Bind(wx.EVT_CHECKBOX, self.OnButton)
+        self.F08.SetValue(lmask & 1)
 
-        self.F09 = wx.CheckBox( self.m_scrolledWindow1, wx.ID_ANY, u"F09", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.F09 = wx.CheckBox( self.m_scrolledWindow1, CKFUNC, u"F09", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.F09.SetMinSize( wx.Size( 38,-1 ) )
-
         bSizer801.Add( self.F09, 0, wx.ALL, 5 )
+        self.F09.Bind(wx.EVT_CHECKBOX, self.OnButton)
+        self.F08.SetValue(lmask & 2)
 
-        self.F10 = wx.CheckBox( self.m_scrolledWindow1, wx.ID_ANY, u"F10", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.F10 = wx.CheckBox( self.m_scrolledWindow1, CKFUNC, u"F10", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.F10.SetMinSize( wx.Size( 38,-1 ) )
-
         bSizer801.Add( self.F10, 0, wx.ALL, 5 )
+        self.F10.Bind(wx.EVT_CHECKBOX, self.OnButton)
+        self.F10.SetValue(lmask & 4)
 
-        self.F11 = wx.CheckBox( self.m_scrolledWindow1, wx.ID_ANY, u"F11", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.F11 = wx.CheckBox( self.m_scrolledWindow1, CKFUNC, u"F11", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.F11.SetMinSize( wx.Size( 38,-1 ) )
-
         bSizer801.Add( self.F11, 0, wx.ALL, 5 )
+        self.F11.Bind(wx.EVT_CHECKBOX, self.OnButton)
+        self.F11.SetValue(lmask & 8)
 
-        self.F12 = wx.CheckBox( self.m_scrolledWindow1, wx.ID_ANY, u"F12", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.F12 = wx.CheckBox( self.m_scrolledWindow1, CKFUNC, u"F12", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.F12.SetMinSize( wx.Size( 38,-1 ) )
-
         bSizer801.Add( self.F12, 0, wx.ALL, 5 )
+        self.F12.Bind(wx.EVT_CHECKBOX, self.OnButton)
+        self.F12.SetValue(lmask & 16)
 
-        self.F13 = wx.CheckBox( self.m_scrolledWindow1, wx.ID_ANY, u"F13", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.F13 = wx.CheckBox( self.m_scrolledWindow1, CKFUNC, u"F13", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.F13.SetMinSize( wx.Size( 38,-1 ) )
-
         bSizer801.Add( self.F13, 0, wx.ALL, 5 )
+        self.F13.Bind(wx.EVT_CHECKBOX, self.OnButton)
+        self.F13.SetValue(lmask & 32)
 
-        self.F14 = wx.CheckBox( self.m_scrolledWindow1, wx.ID_ANY, u"F14", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.F14 = wx.CheckBox( self.m_scrolledWindow1, CKFUNC, u"F14", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.F14.SetMinSize( wx.Size( 38,-1 ) )
-
         bSizer801.Add( self.F14, 0, wx.ALL, 5 )
+        self.F14.Bind(wx.EVT_CHECKBOX, self.OnButton)
+        self.F14.SetValue(lmask & 64)
 
-        self.F15 = wx.CheckBox( self.m_scrolledWindow1, wx.ID_ANY, u"F15", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.F15 = wx.CheckBox( self.m_scrolledWindow1, CKFUNC, u"F15", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.F15.SetMinSize( wx.Size( 38,-1 ) )
-
         bSizer801.Add( self.F15, 0, wx.ALL, 5 )
+        self.F15.Bind(wx.EVT_CHECKBOX, self.OnButton)
+        self.F15.SetValue(lmask & 128)
 
 
         bSizer9.Add( bSizer801, 0, wx.EXPAND, 5 )
-
-
         self.m_staticline5 = wx.StaticLine( self.m_scrolledWindow1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
         bSizer9.Add( self.m_staticline5, 0, wx.EXPAND |wx.ALL, 5 )
-
         self.m_staticText48 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"Configuration Variables", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText48.Wrap( -1 )
-
         self.m_staticText48.SetFont( wx.Font( 12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-
         bSizer9.Add( self.m_staticText48, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
-
         bSizer2613 = wx.BoxSizer( wx.HORIZONTAL )
-
         bSizer2613.SetMinSize( wx.Size( 20,20 ) )
-
         bSizer2613.Add( ( 190, 0), 0, wx.EXPAND, 5 )
-
         self.m_staticText2312 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"Address", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText2312.Wrap( -1 )
-
         self.m_staticText2312.SetFont( wx.Font( 10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-
         bSizer2613.Add( self.m_staticText2312, 0, wx.ALL, 5 )
 
-
         bSizer2613.Add( ( 22, 0), 0, wx.EXPAND, 5 )
-
         self.m_staticText2613 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"Data", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText2613.Wrap( -1 )
-
         self.m_staticText2613.SetFont( wx.Font( 10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-
         bSizer2613.Add( self.m_staticText2613, 0, wx.ALL, 5 )
-
-
         bSizer9.Add( bSizer2613, 0, wx.EXPAND, 5 )
-
         bSizer1012111 = wx.BoxSizer( wx.HORIZONTAL )
 
         self.m_staticText1212111 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"CV 1", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText1212111.Wrap( -1 )
-
         self.m_staticText1212111.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.m_staticText1212111.SetMinSize( wx.Size( 100,-1 ) )
-
         bSizer1012111.Add( self.m_staticText1212111, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
-
-
         bSizer1012111.Add( ( 75, 0), 0, wx.EXPAND, 5 )
 
         self.CV1Addr = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
         self.CV1Addr.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.CV1Addr.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer1012111.Add( self.CV1Addr, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
         self.CV1Data = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
         self.CV1Data.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.CV1Data.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer1012111.Add( self.CV1Data, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
-        self.OutputYButton1 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.OutputYButton1.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-        self.OutputYButton1.SetMinSize( wx.Size( 50,30 ) )
+        self.CVButton1 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.CVButton1.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
+        self.CVButton1.SetMinSize( wx.Size( 50,30 ) )
 
-        bSizer1012111.Add( self.OutputYButton1, 0, wx.ALL, 7 )
-
-
+        bSizer1012111.Add( self.CVButton1, 0, wx.ALL, 7 )
         bSizer9.Add( bSizer1012111, 1, wx.EXPAND, 5 )
-
         bSizer1012112 = wx.BoxSizer( wx.HORIZONTAL )
-
         self.m_staticText1212112 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"CV 2", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText1212112.Wrap( -1 )
 
         self.m_staticText1212112.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.m_staticText1212112.SetMinSize( wx.Size( 100,-1 ) )
-
         bSizer1012112.Add( self.m_staticText1212112, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
-
-
         bSizer1012112.Add( ( 75, 0), 0, wx.EXPAND, 5 )
 
         self.CV2Addr = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
         self.CV2Addr.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.CV2Addr.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer1012112.Add( self.CV2Addr, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
         self.CV2Data = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
         self.CV2Data.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.CV2Data.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer1012112.Add( self.CV2Data, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
-        self.OutputYButton2 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.OutputYButton2.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-        self.OutputYButton2.SetMinSize( wx.Size( 50,30 ) )
-
-        bSizer1012112.Add( self.OutputYButton2, 0, wx.ALL, 7 )
+        self.CVButton2 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.CVButton2.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
+        self.CVButton2.SetMinSize( wx.Size( 50,30 ) )
+        bSizer1012112.Add( self.CVButton2, 0, wx.ALL, 7 )
 
 
         bSizer9.Add( bSizer1012112, 1, wx.EXPAND, 5 )
-
         bSizer1012113 = wx.BoxSizer( wx.HORIZONTAL )
-
         self.m_staticText1212113 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"CV 3", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText1212113.Wrap( -1 )
 
         self.m_staticText1212113.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.m_staticText1212113.SetMinSize( wx.Size( 100,-1 ) )
-
         bSizer1012113.Add( self.m_staticText1212113, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
-
-
         bSizer1012113.Add( ( 75, 0), 0, wx.EXPAND, 5 )
 
         self.CV3Addr = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
         self.CV3Addr.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.CV3Addr.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer1012113.Add( self.CV3Addr, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
         self.CV3Data = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
         self.CV3Data.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.CV3Data.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer1012113.Add( self.CV3Data, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
-        self.OutputYButton3 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.OutputYButton3.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-        self.OutputYButton3.SetMinSize( wx.Size( 50,30 ) )
-
-        bSizer1012113.Add( self.OutputYButton3, 0, wx.ALL, 7 )
-
+        self.CVButton3 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.CVButton3.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
+        self.CVButton3.SetMinSize( wx.Size( 50,30 ) )
+        bSizer1012113.Add( self.CVButton3, 0, wx.ALL, 7 )
 
         bSizer9.Add( bSizer1012113, 1, wx.EXPAND, 5 )
-
         bSizer1012114 = wx.BoxSizer( wx.HORIZONTAL )
 
         self.m_staticText1212114 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"CV 4", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText1212114.Wrap( -1 )
-
         self.m_staticText1212114.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.m_staticText1212114.SetMinSize( wx.Size( 100,-1 ) )
-
         bSizer1012114.Add( self.m_staticText1212114, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
-
 
         bSizer1012114.Add( ( 75, 0), 0, wx.EXPAND, 5 )
 
         self.CV4Addr = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
         self.CV4Addr.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.CV4Addr.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer1012114.Add( self.CV4Addr, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
         self.CV4Data = wx.TextCtrl( self.m_scrolledWindow1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
         self.CV4Data.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
         self.CV4Data.SetMinSize( wx.Size( 60,-1 ) )
-
         bSizer1012114.Add( self.CV4Data, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
-        self.OutputYButton4 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.OutputYButton4.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
-        self.OutputYButton4.SetMinSize( wx.Size( 50,30 ) )
-
-        bSizer1012114.Add( self.OutputYButton4, 0, wx.ALL, 7 )
+        self.CVButton4 = wx.Button( self.m_scrolledWindow1, wx.ID_ANY, u"Prg", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.CVButton4.SetFont( wx.Font( 16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
+        self.CVButton4.SetMinSize( wx.Size( 50,30 ) )
+        bSizer1012114.Add( self.CVButton4, 0, wx.ALL, 7 )
 
 
         bSizer9.Add( bSizer1012114, 1, wx.EXPAND, 5 )
-
         self.m_staticline51 = wx.StaticLine( self.m_scrolledWindow1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
         bSizer9.Add( self.m_staticline51, 0, wx.EXPAND |wx.ALL, 5 )
 
         self.m_staticText40 = wx.StaticText( self.m_scrolledWindow1, wx.ID_ANY, u"Factory Reset", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText40.Wrap( -1 )
-
         bSizer9.Add( self.m_staticText40, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
-
         bSizer37 = wx.BoxSizer( wx.VERTICAL )
 
         bSizer37.SetMinSize( wx.Size( -1,10 ) )
@@ -1626,18 +1655,15 @@ class ReceiverFrame ( wx.Frame ):
 
         bSizer9.Add( bSizer37, 0, wx.EXPAND, 5 )
         bSizer8.Add( bSizer9, 0, wx.ALIGN_CENTER_HORIZONTAL, 0 )
-
         self.m_scrolledWindow1.SetSizer( bSizer8 )
         self.m_scrolledWindow1.Layout()
         bSizer8.Fit( self.m_scrolledWindow1 )
         bSizer3.Add( self.m_scrolledWindow1, 1, wx.EXPAND |wx.ALL, 5 )
 
-
         self.SetSizer( bSizer3 )
         self.Layout()
 
         self.Centre( wx.BOTH )
-
 
     def __del__( self ):
         pass

@@ -283,7 +283,7 @@ class MainWindow(scrolled.ScrolledPanel):
               self.getData(address, GETNOTCHMASKS, nodeMasks)
               maskData = nodeMasks[address][1]
 
-              nFrame = ReceiverFrame(self, title="{}".format(nodeid), size=(600,800), mac=address, data=msgData, pdata=physicsData, ndata=notchData, mdata=nodeMasks, xbee=self.Xbee)
+              nFrame = ReceiverFrame(self, title="{}".format(nodeid), size=(600,800), mac=address, data=msgData, pdata=physicsData, ndata=notchData, mdata=maskData, xbee=self.Xbee)
               nFrame.Show(True)
               return
 
