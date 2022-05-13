@@ -4,7 +4,6 @@
 ## Python code generated with wxFormBuilder (version Oct 26 2018)
 ## http://www.wxformbuilder.org/
 ##
-## PLEASE DO *NOT* EDIT THIS FILE!
 ###########################################################################
 
 import wx
@@ -47,8 +46,6 @@ def buildAddress(address):
     dest[7] = int(address[14:16], 16)
     return dest
 
-###########################################################################
-## Class MyFrame1
 ###########################################################################
 
 class OpenPTFrame ( wx.Frame ):
@@ -258,7 +255,7 @@ class OpenPTFrame ( wx.Frame ):
         bSizer7 = wx.BoxSizer( wx.VERTICAL )
 
         self.m_bpButton1 = wx.BitmapButton( self, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW|0 )
-        self.m_bpButton1.SetBitmap( wx.Bitmap( u"rb.png", wx.BITMAP_TYPE_ANY ) )
+        self.m_bpButton1.SetBitmap( wx.Bitmap( u"images/rb.png", wx.BITMAP_TYPE_ANY ) )
         bSizer7.Add( self.m_bpButton1, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
 
         m_choice1Choices = FUNCTIONCHOICES
@@ -276,7 +273,7 @@ class OpenPTFrame ( wx.Frame ):
 
         self.m_bpButton2 = wx.BitmapButton( self, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW|0 )
 
-        self.m_bpButton2.SetBitmap( wx.Bitmap( u"bb.png", wx.BITMAP_TYPE_ANY ) )
+        self.m_bpButton2.SetBitmap( wx.Bitmap( u"images/bb.png", wx.BITMAP_TYPE_ANY ) )
         bSizer8.Add( self.m_bpButton2, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
 
         m_choice2Choices = FUNCTIONCHOICES
@@ -293,7 +290,7 @@ class OpenPTFrame ( wx.Frame ):
 
         self.m_bpButton3 = wx.BitmapButton( self, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW|0 )
 
-        self.m_bpButton3.SetBitmap( wx.Bitmap( u"yb.png", wx.BITMAP_TYPE_ANY ) )
+        self.m_bpButton3.SetBitmap( wx.Bitmap( u"images/yb.png", wx.BITMAP_TYPE_ANY ) )
         bSizer9.Add( self.m_bpButton3, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
 
         m_choice3Choices = FUNCTIONCHOICES
@@ -317,7 +314,7 @@ class OpenPTFrame ( wx.Frame ):
 
         self.m_bpButton4 = wx.BitmapButton( self, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW|0 )
 
-        self.m_bpButton4.SetBitmap( wx.Bitmap( u"switch.png", wx.BITMAP_TYPE_ANY ) )
+        self.m_bpButton4.SetBitmap( wx.Bitmap( u"images/switch.png", wx.BITMAP_TYPE_ANY ) )
         bSizer18.Add( self.m_bpButton4, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
 
         m_choice4Choices = FUNCTIONCHOICES
@@ -333,7 +330,7 @@ class OpenPTFrame ( wx.Frame ):
 
         self.m_bpButton5 = wx.BitmapButton( self, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW|0 )
 
-        self.m_bpButton5.SetBitmap( wx.Bitmap( u"switch.png", wx.BITMAP_TYPE_ANY ) )
+        self.m_bpButton5.SetBitmap( wx.Bitmap( u"images/switch.png", wx.BITMAP_TYPE_ANY ) )
         bSizer19.Add( self.m_bpButton5, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
 
         m_choice5Choices = FUNCTIONCHOICES
@@ -349,7 +346,7 @@ class OpenPTFrame ( wx.Frame ):
 
         self.m_bpButton6 = wx.BitmapButton( self, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW|0 )
 
-        self.m_bpButton6.SetBitmap( wx.Bitmap( u"switch.png", wx.BITMAP_TYPE_ANY ) )
+        self.m_bpButton6.SetBitmap( wx.Bitmap( u"images/switch.png", wx.BITMAP_TYPE_ANY ) )
         bSizer20.Add( self.m_bpButton6, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
 
         m_choice6Choices = FUNCTIONCHOICES
@@ -365,7 +362,7 @@ class OpenPTFrame ( wx.Frame ):
 
         self.m_bpButton7 = wx.BitmapButton( self, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW|0 )
 
-        self.m_bpButton7.SetBitmap( wx.Bitmap( u"switch.png", wx.BITMAP_TYPE_ANY ) )
+        self.m_bpButton7.SetBitmap( wx.Bitmap( u"images/switch.png", wx.BITMAP_TYPE_ANY ) )
         bSizer21.Add( self.m_bpButton7, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
 
         m_choice7Choices = FUNCTIONCHOICES
