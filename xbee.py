@@ -2,6 +2,7 @@
 # PTConfigure Version of Xbee communications  for windows
 
 import serial
+import serial.tools.list_ports
 
 ## MRBUS Protothrottle utility routines
 
@@ -52,14 +53,18 @@ class xbeeController:
     def __init__(self):
         # start on COM1, open each until we find the Xbee
         self.sp = None
-        for p in range(1, 20):
-            port = 'COM{}'.format(p)
-            try:
-               sp = serial.Serial(port, 38400, timeout=0.25)
-               self.sp = sp
-               return
-            except:
-               pass
+
+        ports = serial.tools.list_ports.comports()
+
+        for port, desc, hwid in sorted(ports):
+            if 'Silicon Labs CP210' in desc:
+               try:
+                  sp = serial.Serial(port, 38400, timeout=0.25)
+                  self.sp = sp
+                  return
+               except:
+                  print ('Silicon Labs CP210x USB Driver Not Found!')
+                  pass
 
     def getStatus(self):
         return self.sp
