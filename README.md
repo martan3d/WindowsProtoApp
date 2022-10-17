@@ -1,6 +1,22 @@
 # WindowsProtoApp
+
 WX Python OpenPTC, Receiver and Protothrottle Windows Programmer UI
 
 This program is designed to be an alternative to the raspberry pi based stand alone programmer.  The interface is a USB cable with an Xbee 'dongle' on the end. Plug that into your Windows PC and run this python program.
 
-I have this program about 80% complete with this submit, feel free to download and mess with it if you like.
+The Xbee must be an S2C or better and be running the 802.15.4 TH firmware. Use the Digi XCTU utility to verify this. Zigbee or Digimesh will not work.
+
+The dongle must have the correct USB drivers installed.  I use the WaveShare device available on Amazon, it uses the Silicon Labs USB Driver.
+
+If you look at the code it assumes the USB port to the Xbee is simple serial port
+
+----------------------------------------------------------------------------------
+
+With XCTU, insure the Xbee is set to a PAN ID of 225 and set the 16bit source address to 3039.
+
+Also set the API mode to 1, API Mode without Escapes [1]
+
+The UART baud rate needs to be 38400, No Parity, One stop bit.
+
+
+
