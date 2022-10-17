@@ -2,7 +2,11 @@
 
 WX Python OpenPTC, Receiver and Protothrottle Windows Programmer UI
 
-This program is designed to be an alternative to the raspberry pi based stand alone programmer.  The interface is a USB cable with an Xbee 'dongle' on the end. Plug that into your Windows PC and run this python program.
+This program is designed to be an alternative to my raspberry pi based stand alone programmer.  
+
+I have tested this with Windows 7, 10 and 11. It's pretty basic, it should work with most Windows versions.
+
+The interface is a USB cable with an Xbee 'dongle' on the end. Plug that into your Windows PC and run this python program.
 
 The Xbee must be an S2C or better and be running the 802.15.4 TH firmware. Use the Digi XCTU utility to verify this. Zigbee or Digimesh will not work.
 
