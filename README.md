@@ -12,11 +12,22 @@ If you look at the code it assumes the USB port to the Xbee is simple serial por
 
 ----------------------------------------------------------------------------------
 
-With XCTU, insure the Xbee is set to a PAN ID of 225 and set the 16bit source address to 3039.
+With XCTU, insure the Xbee is set to a PAN ID of 225, this is where the Protothrottle Lives.
 
-Also set the API mode to 1, API Mode without Escapes [1]
+Set the 16bit source address to 3039. The Receiver needs to see a directed message from this address.
+
+Also set the API mode to 1 - (API Mode without Escapes [1])
 
 The UART baud rate needs to be 38400, No Parity, One stop bit.
+
+----------------------------------------------------------------------------------
+
+There is python code in the xbee module that supports the R/W of the Protothrottle EEPROM
+
+It is not implemented in the WX UI but has been tested with the latest Protothrottle Firmware.  
+
+Feel free to experiment.
+
 
 
 
