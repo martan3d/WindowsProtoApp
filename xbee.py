@@ -140,6 +140,9 @@ class xbeeController:
 
         for p in data:
             r.append(ord(chr(p)))
+
+        print (r)
+
         return r
 
 ##

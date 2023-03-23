@@ -44,7 +44,8 @@ SETDECELERATION  = 55
 SETBRAKERATE     = 56
 SETBRAKEFUNCTION = 57
 FACTORYRESET     = 58
-
+SETPWMMODE       = 59
+GETPWMMODE       = 60
 
 # ---------------------------------------------------
 # Utility Methods
@@ -165,8 +166,6 @@ class NodeDialog(wx.Frame):
 
 ########################################################################
 class MainWindow(scrolled.ScrolledPanel):
-    """"""
-
     #----------------------------------------------------------------------
     def __init__(self, parent):
         """Constructor"""
@@ -212,7 +211,6 @@ class MainWindow(scrolled.ScrolledPanel):
 
     #----------------------------------------------------------------------
     def AddWidget(self, name, nodeid):
-        """"""
         label = "{}\n{}".format(nodeid, name)
         n = int(name, 16)
         n = n & 0x7fff
@@ -287,6 +285,8 @@ class MainWindow(scrolled.ScrolledPanel):
               nFrame.Show(True)
               return
 
+# TODO: find a way to id the protothrottle
+#
 #        else:  # no return, must be real protothrottle
 #           nFrame = PthrottleFrame(self, title="Protothottle {}".format(address), size=(600,800), data=None)
 #           nFrame.Show(True)
@@ -347,6 +347,7 @@ class MainWindow(scrolled.ScrolledPanel):
 
         self.Xbee.xbeeDataQuery('N','D')    # network discovery, all Xbees answer this
 
+        print ('scan xbee network')
         time.sleep(0.25)
 
         while(1):
@@ -355,13 +356,12 @@ class MainWindow(scrolled.ScrolledPanel):
 
             if msgtype == DISCOVERYRESPONSE:
                nodeDict[nodedata[1]] = [nodedata[2], nodedata[3]]
-#               print ('nodedata', nodedata)
-#               print ('nodeDict', nodeDict)
 
             if msgtype == None:
                break
 
         self.DrawWidgets()
+        print ('scan finished')
 
     #---------------------------------------------------------------------
     def DrawWidgets(self):
@@ -423,8 +423,6 @@ class MainWindow(scrolled.ScrolledPanel):
 
 ########################################################################
 class MainFrame(wx.Frame):
-    """"""
-
     #----------------------------------------------------------------------
     def __init__(self):
         """Constructor"""

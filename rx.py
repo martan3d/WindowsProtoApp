@@ -329,22 +329,26 @@ class ReceiverFrame ( wx.Frame ):
 
     def handleESCMode(self):
         servomode = self.escMode.GetLabel()
-        print (servomode)
+
         sm = 0
-        if servomode == 'Steam':
+        if 'Steam' in servomode:
            servomode = 'Couplers'
            sm = 1
-        elif servomode == 'Couplers':
+        elif 'Couplers' in servomode:
              servomode = 'ESC'
              sm = 2
-        elif servomode == 'ESC':
+        elif 'ESC' in servomode:
              servomode = 'Physics'
              sm = 3
-        elif servomode == 'Physics':
+        elif 'Physics' in servomode:
+             servomode = 'PWM'
+             sm = 4
+        elif 'PWM' in servomode:
              servomode = 'Steam'
              sm = 0
 
         self.escMode.SetLabel(servomode)
+        print (servomode)
 
         payload = chr(SETSERVOMODE) + chr(sm) + '234567890123456789'
         self.Xbee.clear()
@@ -672,6 +676,7 @@ class ReceiverFrame ( wx.Frame ):
         print (self.maskFrame)
         self.macAddress   = mac
         self.Xbee         = xbee
+        self.escMode      = "        "
 
         self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
         self.SetFont( wx.Font( 22, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
@@ -1120,13 +1125,15 @@ class ReceiverFrame ( wx.Frame ):
         servomode = self.dataFrame[33]
         mode = ''
         if servomode == 0:
-           mode = 'Steam'
+           mode = ' Steam  '
         if servomode == 1:
            mode = 'Couplers'
         if servomode == 2:
-           mode = 'ESC'
+           mode = '  ESC   '
         if servomode == 3:
-           mode = 'Physics'
+           mode = 'Physics '
+        if servomode == 4:
+           mode = '  PWM   '
 
         self.escMode = wx.Button( self.m_scrolledWindow1, ESCMODE, mode, wx.DefaultPosition, wx.DefaultSize, 0 )
         self.escMode.SetFont( wx.Font( 16, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, "Arial" ) )
