@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ProtoApp"
-#define MyAppVersion "1.1"
+#define MyAppVersion "3.1a"
 #define MyAppPublisher "Blueridge Engineering"
 #define MyAppURL "http://www.blueridgeengineering.net/"
 #define MyAppExeName "protoApp.exe"

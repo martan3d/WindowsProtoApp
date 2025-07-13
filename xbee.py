@@ -61,6 +61,7 @@ class xbeeController:
                try:
                   sp = serial.Serial(port, 38400, timeout=0.25)
                   self.sp = sp
+                  print ('xbee port opened')
                   return
                except:
                   print ('Silicon Labs CP210x USB Driver Not Found!')
@@ -157,13 +158,13 @@ class xbeeController:
     def xbeeBroadCastRequest(self, dest, src, data):
         pktLen = 10 + len(data) # MRBus overhead, 5 XBee, and the data
         frame = []
-        frame.append(0x7e)	     # 0 - Start
+        frame.append(0x7e)	         # 0 - Start
         frame.append(0)              # 1 - Len MSB
         frame.append(pktLen)         # 2 - Len LSB
         frame.append(0x01)           # 3 - COMMAND - transmit 16 bit address
-        frame.append(0x00)	     # 4 - frame ID for ack- 0 = disable
+        frame.append(0x00)	         # 4 - frame ID for ack- 0 = disable
         frame.append(0xFF)           # 5 - MSB of dest address - broadcast 0xFFFF
-        frame.append(0xFF)	     # 6 - LSB of dest address
+        frame.append(0xFF)	         # 6 - LSB of dest address
         frame.append(0)	             # 7 - Transmit Options
 
         # mrbus stuff
@@ -213,7 +214,7 @@ class xbeeController:
         frame.append(0)	            # our data is always fixed size
         frame.append(4)             # this is all data except header, length and checksum
         frame.append(0x08)          # AT COMMAND - send Query to Xbee module
-        frame.append(0x52)	    # frame ID for ack- 0 = disable
+        frame.append(0x01)	    # frame ID for ack- 0 = disable
         frame.append(c1)	    # Command high character
         frame.append(c0)	    # low character
         frame.append(0)	            # zero checksum location
@@ -228,6 +229,8 @@ class xbeeController:
         for i in range(0,8):
             t = chr(frame[i])
             self.sp.write(t.encode())
+            dd = "{:02x}".format(frame[i])
+            print (dd)
 
 ##
 ## Send Directed Message to an Xbee on the Network

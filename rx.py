@@ -191,7 +191,12 @@ class ReceiverFrame ( wx.Frame ):
 
     def handleBaseID(self):
         baseid = self.BaseID.GetValue()
-        datapayload = chr(SETBASEADDRESS) + baseid[0] + baseid[1] + '34567890123456789'
+
+        mnum = int(baseid)
+
+        print ('mnum = ', mnum)
+
+        datapayload = chr(SETBASEADDRESS) + chr(mnum) + '34567890123456789'
         self.Xbee.clear()
         self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), datapayload)
         time.sleep(0.1)

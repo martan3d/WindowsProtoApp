@@ -259,12 +259,14 @@ class MainWindow(scrolled.ScrolledPanel):
         address = lookUp[n]
 
         messageType = self.getData(address, RETURNTYPE, nodeDict)
-        print (messageType)
+        print ('messageType', messageType)
 
         if messageType == DIRECTEDRESPONSE:
            msgData = nodeDict[address][1]
            nodeid  = nodeDict[address][0]
            moduleType = chr(msgData[9])                           # extract module type code from message
+
+           print ('module Type', moduleType)
 
            if moduleType == 'O':
               nFrame = OpenPTFrame(self, title="Open Protothottle {}".format(address), size=(600,800), data=msgData, xbee=self.Xbee, macaddress=address)
@@ -331,6 +333,7 @@ class MainWindow(scrolled.ScrolledPanel):
         while(1):
             nodedata = self.pullPacket()
             msgtype = nodedata[0]
+            print ('getData', nodedata)
 
             if msgtype == DIRECTEDRESPONSE:
                nodeid = nodeDict[address][0]
@@ -348,10 +351,11 @@ class MainWindow(scrolled.ScrolledPanel):
         self.Xbee.xbeeDataQuery('N','D')    # network discovery, all Xbees answer this
 
         print ('scan xbee network')
-        time.sleep(0.25)
+        time.sleep(0.75)
 
         while(1):
             nodedata = self.pullPacket()
+            print ('nodedata from scan', nodedata)
             msgtype = nodedata[0]
 
             if msgtype == DISCOVERYRESPONSE:
