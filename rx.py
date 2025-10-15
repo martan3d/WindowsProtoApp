@@ -191,7 +191,12 @@ class ReceiverFrame ( wx.Frame ):
 
     def handleBaseID(self):
         baseid = self.BaseID.GetValue()
-        datapayload = chr(SETBASEADDRESS) + baseid[0] + baseid[1] + '34567890123456789'
+
+        mnum = int(baseid)
+
+        print ('mnum = ', mnum)
+
+        datapayload = chr(SETBASEADDRESS) + chr(mnum) + '34567890123456789'
         self.Xbee.clear()
         self.Xbee.xbeeTransmitDataFrame(self.buildAddress(self.macAddress), datapayload)
         time.sleep(0.1)
@@ -1647,7 +1652,7 @@ class ReceiverFrame ( wx.Frame ):
         self.F09.SetMinSize( wx.Size( 38,-1 ) )
         bSizer801.Add( self.F09, 0, wx.ALL, 5 )
         self.F09.Bind(wx.EVT_CHECKBOX, self.OnCheck)
-        self.F08.SetValue(lmask & 2)
+        self.F09.SetValue(lmask & 2)
 
         self.F10 = wx.CheckBox( self.m_scrolledWindow1, CKFUNC10, u"F10", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.F10.SetMinSize( wx.Size( 38,-1 ) )

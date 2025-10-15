@@ -1,0 +1,5 @@
+py2exe
+
+python setup.py py2exe
+
+Then run the iss setup package, it will produce an installable for windows.
